@@ -2463,7 +2463,5 @@ def register_manager():
     return render_template("signup_manager.html", error=error)
 
 if __name__ == "__main__":
-    with app.app_context():
-        # هذا السطر سيقوم بإنشاء الجدول أو الأعمدة الناقصة أوتوماتيكياً
-        db.create_all() 
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
