@@ -17,6 +17,7 @@ from flask import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask import render_template
 
 from models import Base, make_db, Doctor, Task, TaskAssignment, Message, ActivityLog, ExamSession, ExamParticipation, Notification, PollResponse, TutorInteraction, StudentProject, ProjectInteraction, AttendanceSession, AttendanceRecord, ChatMessage, QuickPoll, PollAnswer
 from ai_advisor import generate_ai_student_advice as generate_student_advice, process_pdf_and_answer
@@ -526,6 +527,15 @@ def upload_project():
     
     flash("Project uploaded successfully!")
     return redirect(url_for("projects_dashboard"))
+
+
+@app.route("/")
+def home():
+    return render_template("Home_page.html")
+
+@app.route("/")
+def home():
+    return render_template("Home_page.html")
 
 @app.route("/projects/interact/<int:project_id>/<string:itype>", methods=["POST"])
 def interact_project(project_id, itype):
