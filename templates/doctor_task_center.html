@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- إضافة خطوط Google Fonts وأيقونات FontAwesome -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+    --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --input-bg: rgba(0, 0, 0, 0.2);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+
+  body {
+    margin: 0;
+    background: #0f172a;
+    font-family: 'Cairo', 'Poppins', sans-serif;
+    color: var(--text-main);
+    overflow-x: hidden;
+  }
+
+  /* خلفية فنية */
+  .bg-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+  }
+
+  .glow-orb {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.1;
+    animation: pulse 10s infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { transform: scale(1) translate(0, 0); }
+    to { transform: scale(1.2) translate(50px, 50px); }
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* البطاقات الزجاجية */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0.5;
+  }
+
+  /* الهيدر */
+  .header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-flex h2 {
+    font-size: 32px;
+    font-weight: 900;
+    margin: 0;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* الأزرار */
+  .btn-group {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-action {
+    padding: 12px 24px;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+  }
+
+    .btn-back { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); }
+
+    .btn-back-global {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  .btn-logout { background: var(--accent-gradient); }
+  .btn-send { background: var(--primary-gradient); width: 100%; justify-content: center; margin-top: 20px; font-size: 16px; padding: 16px; }
+
+  .btn-action:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    filter: brightness(1.1);
+  }
+
+  /* النماذج والمدخلات */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .input-wrapper label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .custom-input {
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .custom-input:focus {
+    border-color: #6366f1;
+    background: rgba(0,0,0,0.4);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  select.custom-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 15px;
+    padding-right: 40px;
+  }
+
+  textarea.custom-input {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  /* قسم النطاق (Range) */
+  .range-section {
+    background: rgba(255,255,255,0.02);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px dashed var(--glass-border);
+    margin-top: 10px;
+  }
+
+  .range-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: #a855f7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* أيقونات الأقسام */
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #6366f1;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--glass-border), transparent);
+    margin: 30px 0;
+  }
+
+  /* تخصيص رفع الملفات */
+  .file-input-container {
+    position: relative;
+  }
+
+  .custom-input[type="file"]::-webkit-file-upload-button {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 6px 12px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+</style>
+
+<div class="bg-glow">
+  <div class="glow-orb" style="top: -100px; left: -100px; background: #6366f1;"></div>
+  <div class="glow-orb" style="bottom: -100px; right: -100px; background: #a855f7;"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- الهيدر -->
+  <div class="glass-card">
+    <div class="header-flex">
+      <div style="display: flex; align-items: center; gap: 20px;">
+          <h2><i class="fas fa-paper-plane"></i> Task Center</h2>
+          <a class="btn-back-global" href="{{ url_for('doctor_dashboard') }}">← Back</a>
+      </div>
+      <div class="btn-group">
+        <a class="btn-action btn-logout" href="{{ url_for('logout') }}">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    
+    <!-- قسم الفلترة (Target Audience) -->
+    <div class="glass-card">
+      <div class="range-title"><i class="fas fa-filter"></i> Target Audience</div>
+      <div class="form-grid">
+        <div class="input-wrapper">
+          <label><i class="fas fa-layer-group"></i> Academic Level</label>
+          <input type="text" name="level" placeholder="e.g. 2" class="custom-input">
+        </div>
+        <div class="input-wrapper">
+          <label><i class="fas fa-university"></i> Department</label>
+          <input type="text" name="department" placeholder="e.g. Medicine" class="custom-input">
+        </div>
+      </div>
+    </div>
+
+    <!-- قسم تفاصيل المهمة -->
+    <div class="glass-card">
+      <div class="range-title" style="color: #3b82f6;"><i class="fas fa-edit"></i> Task Details</div>
+      
+      <div class="form-grid">
+        <div class="input-wrapper">
+          <label><i class="fas fa-tag"></i> Content Type</label>
+          <select name="kind" class="custom-input">
+            <option>Task</option>
+            <option>Quiz</option>
+            <option>Material</option>
+          </select>
+        </div>
+        <div class="input-wrapper">
+          <label><i class="fas fa-calendar-alt"></i> Deadline</label>
+          <input type="text" name="deadline" placeholder="YYYY-MM-DD HH:MM" class="custom-input">
+        </div>
+        <div class="input-wrapper">
+          <label><i class="fas fa-file-upload"></i> Attachment</label>
+          <input type="file" name="attachment" class="custom-input">
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 20px;">
+        <div class="input-wrapper">
+          <label><i class="fas fa-heading"></i> Title</label>
+          <input type="text" name="title" placeholder="Enter task title..." class="custom-input">
+        </div>
+        <div class="input-wrapper">
+          <label><i class="fas fa-align-left"></i> Description</label>
+          <textarea name="description" placeholder="Provide detailed instructions..." class="custom-input"></textarea>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- قسم النطاق الرقمي -->
+      <div class="range-section">
+        <div class="range-title" style="color: #fb923c;"><i class="fas fa-id-card"></i> Student ID Range (Optional)</div>
+        <div class="form-grid">
+          <div class="input-wrapper">
+            <label>From ID</label>
+            <input type="text" name="range_from" placeholder="1001" class="custom-input">
+          </div>
+          <div class="input-wrapper">
+            <label>To ID</label>
+            <input type="text" name="range_to" placeholder="1020" class="custom-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- زر الإرسال -->
+      <button class="btn-action btn-send" type="submit">
+        <i class="fas fa-paper-plane"></i> Dispatch Task to Students
+      </button>
+
+    </div>
+  </form>
+
+</div>
+
+{% endblock %}

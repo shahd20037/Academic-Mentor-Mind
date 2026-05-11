@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --bg-dark: #050a15;
+        --card-bg: rgba(13, 25, 48, 0.7);
+        --accent-gradient: linear-gradient(90deg, #4f46e5, #9333ea);
+        --text-main: #ffffff;
+        --text-dim: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #1e293b 0%, #050a15 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--text-main);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding-top: 80px;
+    }
+
+    .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex: 1;
+    }
+
+    .signup-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 48px;
+        width: 100%;
+        max-width: 600px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        margin-top: 30px;
+    }
+
+    .card-accent-line {
+        position: absolute;
+        top: 48px;
+        left: 48px;
+        width: 40px;
+        height: 4px;
+        background: #ec4899;
+        border-radius: 2px;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        gap: 20px;
+    }
+
+    .header-content {
+        flex: 1;
+    }
+
+    .role-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #ec4899;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        display: block;
+        text-align: right;
+    }
+
+    .signup-title {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        text-align: right;
+        letter-spacing: -1px;
+    }
+
+    .btn-back {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .signup-subtitle {
+        font-size: 16px;
+        color: var(--text-dim);
+        text-align: right;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .input-control {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: white;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .input-control:focus {
+        outline: none;
+        border-color: #ec4899;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(90deg, #ec4899, #f43f5e);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        margin-top: 12px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .login-link-container {
+        margin-top: 32px;
+        text-align: center;
+        font-size: 14px;
+        color: var(--text-dim);
+    }
+
+    .login-link {
+        color: #ec4899;
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 4px;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
+
+    .msg-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .info-box {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        text-align: center;
+    }
+</style>
+
+<div class="signup-card">
+    <div class="card-accent-line"></div>
+    
+    <div class="header-container">
+        <div class="header-content">
+            <span class="role-label">MANAGER REGISTRATION</span>
+            <h1 class="signup-title">Admin Access</h1>
+        </div>
+        <a href="{{ url_for('signup_choice') }}" class="btn-back">← Back</a>
+    </div>
+    <p class="signup-subtitle">Request administrative access to oversee the entire platform.</p>
+
+    <div class="info-box">
+        ℹ️ Manager accounts require admin verification.
+    </div>
+
+    {% if error %}
+        <div class="msg-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('register_manager') }}">
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="manager_name" class="input-control" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="manager_email" class="input-control" placeholder="admin@university.edu" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="manager_password" class="input-control" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" name="manager_confirm_password" class="input-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Request Manager Account</button>
+    </form>
+
+    <div class="login-link-container">
+        Already have an account? 
+        <a href="{{ url_for('login') }}" class="login-link">Login here</a>
+    </div>
+</div>
+
+{% endblock %}

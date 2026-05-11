@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title if title else "Mentor Mind" }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Link to global CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='static/style.css') }}">
+
+  <style>
+    :root {
+      --navy: #0b1b3a;
+      --card-bg: rgba(10, 25, 45, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --accent: #e63946;
+      --text-silver: #d7dde6;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top right, #1e293b 0%, #050a15 50%) !important;
+      background-attachment: fixed !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Modern Navigation Bar */
+    .navbar {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .nav-brand {
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid var(--glass-border);
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-btn.logout {
+      background: var(--accent);
+      border: none;
+    }
+
+    .nav-btn.logout:hover {
+      background: #cc333d;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 80px auto 0;
+      padding: 20px;
+      flex: 1;
+    }
+
+    /* Flash Messages Styling */
+    .flash-container {
+      margin-bottom: 20px;
+    }
+
+    .flash-msg {
+      background: rgba(46, 204, 113, 0.2);
+      color: #2ecc71;
+      border: 1px solid #2ecc71;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Global Home Icon (Floating) */
+    .global-home {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fff;
+      color: #203348;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transition: transform 0.3s ease;
+    }
+
+    .global-home:hover {
+      transform: scale(1.1);
+    }
+
+    /* Global Header Layout for all pages */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .btn-back-global {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-back-global:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(-3px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <a href="{{ url_for('home_page') }}" class="nav-brand">
+      <span>🧠</span> Mentor Mind
+    </a>
+    
+    <div class="nav-links">
+      <a href="{{ url_for('projects_dashboard') }}" class="nav-btn">Projects</a>
+      {% if session.get('student_code') or session.get('doctor') or session.get('manager') %}
+        <a href="{{ url_for('go_home') }}" class="nav-btn">Dashboard</a>
+        <a href="{{ url_for('logout') }}" class="nav-btn logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('signup_choice') }}" class="nav-btn">Sign Up</a>
+        <a href="{{ url_for('login') }}" class="nav-btn">Login</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <!-- Flash Messages -->
+    <div class="flash-container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="flash-msg">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- FLOATING HOME BUTTON -->
+  <a href="{{ url_for('home_page') }}" class="global-home" title="Home">🏠</a>
+
+</body>
+</html>

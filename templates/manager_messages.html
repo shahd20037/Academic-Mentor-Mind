@@ -1,0 +1,130 @@
+```html
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .messages-container{
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .page-title{
+        color: #00d4ff;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .message-card{
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+        transition: 0.3s ease;
+    }
+
+    .message-card:hover{
+        transform: translateY(-3px);
+        border-color: #00d4ff;
+    }
+
+    .message-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .manager-name{
+        color: #00d4ff;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .message-date{
+        color: #aaa;
+        font-size: 13px;
+    }
+
+    .message-text{
+        color: white;
+        line-height: 1.8;
+        font-size: 16px;
+    }
+
+    .empty-box{
+        text-align: center;
+        padding: 50px;
+        color: #bbb;
+        background: rgba(255,255,255,0.05);
+        border-radius: 18px;
+    }
+
+    .delete-btn{
+        margin-top: 15px;
+        background: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.3s ease;
+    }
+
+    .delete-btn:hover{
+        background: #ff1f1f;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="messages-container">
+
+    <h1 class="page-title">Manager Messages</h1>
+
+    {% if messages %}
+
+        {% for msg in messages %}
+        <div class="message-card">
+
+            <div class="message-header">
+                <div class="manager-name">
+                    Manager
+                </div>
+
+                <div class="message-date">
+                    {{ msg.created_at }}
+                </div>
+            </div>
+
+            <div class="message-text">
+                {{ msg.text }}
+            </div>
+
+            <form action="{{ url_for('delete_message', message_id=msg.id) }}" method="POST">
+                <button type="submit" class="delete-btn">
+                    Delete Message 🗑️
+                </button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-box">
+            <h3>No Messages Yet 📭</h3>
+            <p>You don't have any manager messages right now.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+```

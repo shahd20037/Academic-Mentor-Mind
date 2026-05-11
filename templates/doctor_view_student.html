@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- إضافة خطوط Google Fonts وأيقونات FontAwesome -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee0979 100%);
+    --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --warning-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+
+  body {
+    margin: 0;
+    background: #0b0f1a;
+    font-family: 'Cairo', 'Poppins', sans-serif;
+    color: var(--text-main);
+    overflow-x: hidden;
+  }
+
+  /* خلفية فنية */
+  .bg-decor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .glow-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.1;
+    animation: float 20s infinite alternate;
+  }
+
+  @keyframes float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(100px, 100px); }
+  }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* البطاقات الزجاجية */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+
+  /* الهيدر */
+  .header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-flex h2 {
+    font-size: 28px;
+    font-weight: 900;
+    margin: 0;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* الأزرار */
+  .btn-group {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-custom {
+    padding: 12px 24px;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+  }
+
+    .btn-back { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); }
+
+    .btn-back-global {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  .btn-logout { background: var(--danger-gradient); }
+  .btn-send { background: var(--primary-gradient); width: 100%; justify-content: center; margin-top: 15px; }
+
+  .btn-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    filter: brightness(1.1);
+  }
+
+  /* بروفايل الطالب */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .avatar-circle {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-gradient);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    box-shadow: 0 10px 20px rgba(0, 198, 255, 0.3);
+  }
+
+  .student-name h3 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .student-name p {
+    color: var(--text-muted);
+    margin: 5px 0 0 0;
+    font-size: 14px;
+  }
+
+  /* عرض البيانات (Key-Value) */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .info-item {
+    background: rgba(0,0,0,0.2);
+    padding: 15px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    transition: 0.3s;
+  }
+
+  .info-item:hover {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .info-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .info-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+  }
+
+  /* شارات المخاطر */
+  .badge {
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .badge-danger { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.3); }
+  .badge-warning { background: rgba(246, 211, 101, 0.15); color: #f6d365; border: 1px solid rgba(246, 211, 101, 0.3); }
+  .badge-success { background: rgba(56, 249, 215, 0.15); color: #38f9d7; border: 1px solid rgba(56, 249, 215, 0.3); }
+
+  /* النماذج */
+  .form-section label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+  }
+
+  .custom-input {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 14px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+    box-sizing: border-box;
+  }
+
+  .custom-input:focus {
+    border-color: #00c6ff;
+    background: rgba(0,0,0,0.5);
+  }
+
+  textarea.custom-input {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  /* الرسائل الأخيرة */
+  .msg-history {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
+  .msg-bubble {
+    background: rgba(255,255,255,0.03);
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--glass-border);
+    position: relative;
+  }
+
+  .msg-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .msg-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .attachment-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    font-size: 12px;
+    color: #00c6ff;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+
+  .attachment-link:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* شريط التمرير */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+</style>
+
+<div class="bg-decor">
+  <div class="glow-circle" style="width: 400px; height: 400px; background: #00c6ff; top: -100px; right: -100px;"></div>
+  <div class="glow-circle" style="width: 300px; height: 300px; background: #ee0979; bottom: -50px; left: -50px;"></div>
+</div>
+
+{% set sid = student.get("studentid") or student.get("student_id") or student.get("student_code") or student.get("code") or student.get("id") %}
+
+<div class="wrap">
+
+  <!-- الهيدر العلوي -->
+  <div class="glass-card">
+    <div class="header-flex">
+      <div style="display: flex; align-items: center; gap: 20px;">
+          <h2><i class="fas fa-user-graduate"></i> Student Profile</h2>
+          <a class="btn-back-global" href="{{ url_for('doctor_dashboard') }}">← Back</a>
+      </div>
+      <div class="btn-group">
+        <a class="btn-custom btn-logout" href="{{ url_for('logout') }}">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+    
+    <!-- بيانات الطالب -->
+    <div style="display: flex; flex-direction: column; gap: 25px;">
+      <div class="glass-card">
+        <div class="profile-header">
+          <div class="avatar-circle">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="student-name">
+            <h3>{{ student.get("name","Unknown Student") }}</h3>
+            <p><i class="fas fa-fingerprint"></i> ID: {{ sid or "N/A" }}</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-university"></i> Dept</div>
+            <div class="info-value">{{ student.get("department","N/A") }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-layer-group"></i> Level</div>
+            <div class="info-value">{{ student.get("level","N/A") }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-clock"></i> Hours</div>
+            <div class="info-value">{{ student.get("study_hours","0") }}h</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-chart-line"></i> GPA</div>
+            <div class="info-value">{{ student.get("gpa") or student.get("GPA","0.0") }}</div>
+          </div>
+          <div class="info-item" style="grid-column: span 2;">
+            <div class="info-label"><i class="fas fa-exclamation-triangle"></i> Risk Status</div>
+            <div class="info-value">
+              {% set risk = student.get("risk_level","").lower() %}
+              {% if risk == "high" %}
+                  <span class="badge badge-danger"><i class="fas fa-fire"></i> High Risk</span>
+              {% elif risk == "medium" %}
+                  <span class="badge badge-warning"><i class="fas fa-exclamation-circle"></i> Medium Risk</span>
+              {% else %}
+                  <span class="badge badge-success"><i class="fas fa-check-circle"></i> Low Risk</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- المراسلة والتواصل -->
+    <div style="display: flex; flex-direction: column; gap: 25px;">
+      
+      <!-- إرسال رسالة -->
+      <div class="glass-card">
+        <h3 style="margin-top:0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+          <i class="fas fa-paper-plane" style="color: #00c6ff;"></i> Send Message
+        </h3>
+        <form method="post" enctype="multipart/form-data" class="form-section">
+          <div style="margin-bottom: 15px;">
+            <label>Message Content</label>
+            <textarea name="message" placeholder="Type your message to the student..." class="custom-input"></textarea>
+          </div>
+          <div style="margin-bottom: 15px;">
+            <label>Attachment (Image/Doc/Video)</label>
+            <input type="file" name="attachment" class="custom-input" style="padding: 8px;">
+          </div>
+          <button class="btn-custom btn-send" type="submit">
+            <i class="fas fa-share"></i> Send Now
+          </button>
+        </form>
+      </div>
+
+      <!-- سجل الرسائل -->
+      <div class="glass-card">
+        <h3 style="margin-top:0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+          <i class="fas fa-history" style="color: #94a3b8;"></i> Recent History
+        </h3>
+        <div class="msg-history">
+          {% for m in messages %}
+            <div class="msg-bubble">
+              <div class="msg-time">
+                <i class="far fa-clock"></i> {{ m.created_at }}
+              </div>
+              <div class="msg-text">
+                {{ m.text or "No text content." }}
+              </div>
+              {% if m.attachment_path %}
+                <a class="attachment-link" href="{{ url_for('download_file', path=m.attachment_path) }}">
+                  <i class="fas fa-download"></i> Download Attachment
+                </a>
+              {% endif %}
+            </div>
+          {% else %}
+            <div style="text-align: center; padding: 20px; color: var(--text-muted); font-style: italic;">
+              No messages exchanged yet.
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- AI Tutor Questions Section -->
+  <div class="glass-card" style="margin-top: 25px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="margin:0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-robot" style="color: #a78bfa;"></i> AI Tutor Questions
+      </h3>
+      <a href="{{ url_for('doctor_student_ai_questions', student_code=sid) }}"
+         style="padding: 8px 18px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3);
+                border-radius: 12px; color: #a78bfa; font-size: 13px; font-weight: 700;
+                text-decoration: none; display: flex; align-items: center; gap: 7px;">
+        <i class="fas fa-external-link-alt"></i> View All Questions
+      </a>
+    </div>
+    <p style="color: var(--text-muted); font-size: 13px; margin: 0;">
+      See every question this student asked the AI Tutor and the answers it gave.
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

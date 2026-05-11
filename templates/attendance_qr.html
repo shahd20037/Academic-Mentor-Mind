@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="text-align:center; padding:40px; color:white;">
+
+  <h2>📋 Attendance QR Code</h2>
+  <p>Student: {{ student_code }}</p>
+
+  <div style="
+      margin-top:30px;
+      display:inline-block;
+      padding:20px;
+      background:#1a2332;
+      border-radius:15px;
+      box-shadow:0 0 20px rgba(0,212,255,0.3);
+  ">
+
+    <img src="data:image/png;base64,{{ qr_code }}" 
+         style="width:250px; height:250px;" />
+
+  </div>
+
+  <p style="margin-top:20px; color:#a0a9b8;">
+    Show this QR to your doctor for attendance
+  </p>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 style="color:white;">Exam Cameras Monitoring</h1>
+
+<div id="results"></div>
+
+<script>
+
+function loadExamResults() {
+
+    fetch('/doctor_exam_results/1')
+    .then(response => response.json())
+    .then(data => {
+
+        let html = '';
+
+        data.forEach(student => {
+
+            html += `
+                <div style="
+                    background:#111827;
+                    color:white;
+                    padding:15px;
+                    margin:10px;
+                    border-radius:10px;
+                ">
+
+                    <h3>${student.student_code}</h3>
+
+                    <p>Status: ${student.status}</p>
+
+                    <p>Score: ${student.score}</p>
+
+                    <p>Violations: ${student.violations}</p>
+
+                </div>
+            `;
+        });
+
+        document.getElementById('results').innerHTML = html;
+    });
+}
+
+loadExamResults();
+
+setInterval(loadExamResults, 3000);
+
+</script>
+
+{% endblock %}

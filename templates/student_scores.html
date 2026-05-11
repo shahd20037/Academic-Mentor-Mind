@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Inter', sans-serif;
+    background:
+        radial-gradient(circle at 20% 20%, #0f172a, transparent 40%),
+        radial-gradient(circle at 80% 30%, #0b2a3d, transparent 45%),
+        radial-gradient(circle at 50% 80%, #020617, #000);
+    color:white;
+}
+
+.wrap{
+    max-width:1200px;
+    margin:40px auto;
+    padding:20px;
+}
+
+.hero{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.hero h1{
+    font-size:44px;
+    font-weight:900;
+    background: linear-gradient(90deg,#00d4ff,#00ff88);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    letter-spacing:2px;
+}
+
+.hero p{
+    color:#9aa4b2;
+}
+
+.back{
+    display:inline-block;
+    margin-bottom:20px;
+    color:#00d4ff;
+    text-decoration:none;
+    border:1px solid rgba(0,212,255,0.3);
+    padding:10px 14px;
+    border-radius:12px;
+    transition:0.3s;
+}
+
+.back:hover{
+    background:#00d4ff;
+    color:black;
+}
+
+.center{
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:25px;
+    align-items:center;
+}
+
+.chart-card{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:30px;
+    padding:30px;
+    backdrop-filter:blur(15px);
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 0 40px rgba(0,212,255,0.1);
+}
+
+.chart-card::before{
+    content:"";
+    position:absolute;
+    width:300px;
+    height:300px;
+    background:radial-gradient(circle,#00d4ff22,transparent);
+    top:-120px;
+    right:-120px;
+}
+
+.side{
+    display:grid;
+    gap:15px;
+}
+
+.stat{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+    padding:18px;
+    border-radius:18px;
+    text-align:center;
+    transition:0.3s;
+}
+
+.stat:hover{
+    transform:translateY(-5px);
+    border-color:#00d4ff;
+}
+
+.stat h3{
+    margin:0;
+    font-size:13px;
+    color:#9aa4b2;
+}
+
+.stat .num{
+    font-size:28px;
+    font-weight:800;
+    margin-top:6px;
+    color:#00ff88;
+}
+
+.floating{
+    animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
+}
+
+.bars{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    margin-top:20px;
+}
+
+.bar span{
+    font-size:13px;
+    color:#9aa4b2;
+}
+
+.track{
+    width:100%;
+    height:18px;
+    background:rgba(255,255,255,0.06);
+    border-radius:20px;
+    overflow:hidden;
+    position:relative;
+}
+
+.fill{
+    height:100%;
+    border-radius:20px;
+    animation:grow 1.5s ease forwards;
+    box-shadow:0 0 15px rgba(0,212,255,0.2);
+}
+
+.a{ width: {{ student.attendance }}%; background:linear-gradient(90deg,#00d4ff,#00ff88); }
+.b{ width: {{ student.assignments }}%; background:linear-gradient(90deg,#ff4d6d,#ffb703); }
+.c{ width: {{ student.midterm }}%; background:linear-gradient(90deg,#8ecae6,#219ebc); }
+.d{ width: {{ student.final }}%; background:linear-gradient(90deg,#8338ec,#3a86ff); }
+.e{ width: {{ student.GPA * 25 }}%; background:linear-gradient(90deg,#00ff88,#00d4ff); }
+
+@keyframes grow{
+    from{ width:0; }
+}
+</style>
+
+<div class="wrap">
+    <a class="back" href="{{ url_for('student_dashboard') }}">⬅ Back</a>
+
+    <div class="hero">
+        <h1>SCORE ANALYSIS</h1>
+        <p>Real-time academic performance intelligence system</p>
+    </div>
+
+    <div class="center">
+        <!-- CHART -->
+        <div class="chart-card floating">
+            <h3 style="text-align:center;color:#00d4ff;margin-bottom:20px;">
+                📊 Academic Data Structure
+            </h3>
+            <canvas id="chart" style="max-height: 300px;"></canvas>
+            
+            <div class="bars">
+                <div class="bar">
+                    <span>Attendance</span>
+                    <div class="track"><div class="fill a"></div></div>
+                </div>
+                <div class="bar">
+                    <span>Assignments</span>
+                    <div class="track"><div class="fill b"></div></div>
+                </div>
+                <div class="bar">
+                    <span>Midterm</span>
+                    <div class="track"><div class="fill c"></div></div>
+                </div>
+                <div class="bar">
+                    <span>Final</span>
+                    <div class="track"><div class="fill d"></div></div>
+                </div>
+                <div class="bar">
+                    <span>GPA</span>
+                    <div class="track"><div class="fill e"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="side">
+            <div class="stat">
+                <h3>Attendance</h3>
+                <div class="num">{{ student.attendance }}%</div>
+            </div>
+            <div class="stat">
+                <h3>Assignments</h3>
+                <div class="num">{{ student.assignments }}</div>
+            </div>
+            <div class="stat">
+                <h3>Midterm</h3>
+                <div class="num">{{ student.midterm }}</div>
+            </div>
+            <div class="stat">
+                <h3>Final</h3>
+                <div class="num">{{ student.final }}</div>
+            </div>
+            <div class="stat">
+                <h3>GPA</h3>
+                <div class="num">{{ student.GPA }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+new Chart(document.getElementById('chart'), {
+    type: 'radar',
+    data: {
+        labels: ['Attendance','Assignments','Midterm','Final','GPA'],
+        datasets: [{
+            label: 'Performance Core',
+            data: [
+                {{ student.attendance }},
+                {{ student.assignments }},
+                {{ student.midterm }},
+                {{ student.final }},
+                {{ student.GPA * 25 }}
+            ],
+            borderColor: '#00d4ff',
+            backgroundColor: 'rgba(0,212,255,0.12)',
+            pointBackgroundColor: '#00ff88',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        plugins:{
+            legend:{display:false}
+        },
+        scales:{
+            r:{
+                min:0,
+                max:100,
+                ticks:{display:false},
+                grid:{color:'rgba(255,255,255,0.08)'},
+                pointLabels:{
+                    color:'#cbd5e1',
+                    font:{size:14,weight:'bold'}
+                }
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

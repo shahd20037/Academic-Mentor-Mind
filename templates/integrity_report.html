@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --bg: #0a0f1e;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.09);
+    --accent: #7c3aed;
+    --accent2: #00d4ff;
+    --text: #d7dde6;
+    --muted: #475569;
+    --danger: #e63946;
+    --success: #00ff88;
+    --warn: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: radial-gradient(ellipse at 20% 0%, #1a0a2e 0%, #0a0f1e 60%);
+    font-family: 'Inter', sans-serif; color: #fff; min-height: 100vh;
+}
+.wrap { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+
+/* HEADER */
+.top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 28px;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 20px; margin-bottom: 28px; backdrop-filter: blur(14px);
+}
+.top-bar h1 { font-size: 22px; font-weight: 800; }
+.top-bar h1 span { color: var(--accent2); }
+.top-bar p  { color: var(--text); font-size: 13px; margin-top: 4px; }
+.btn-back {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--text); font-size: 13px; font-weight: 600;
+    text-decoration: none; transition: 0.2s;
+}
+.btn-back:hover { background: rgba(255,255,255,0.07); }
+
+/* STAT CARDS */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+.stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 22px; backdrop-filter: blur(12px);
+    text-align: center;
+}
+.stat-card .val { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+.stat-card .lbl { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.val.green  { color: var(--success); }
+.val.red    { color: var(--danger); }
+.val.blue   { color: var(--accent2); }
+
+/* SESSION ACCORDION */
+.session-block {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; margin-bottom: 18px; overflow: hidden;
+    backdrop-filter: blur(12px);
+}
+.session-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 22px; cursor: pointer;
+    background: rgba(255,255,255,0.02); transition: 0.2s;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+}
+.session-header:hover { background: rgba(124,58,237,0.05); }
+.session-info h3 { font-size: 15px; font-weight: 700; }
+.session-info p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.session-badges { display: flex; gap: 8px; align-items: center; }
+
+.badge {
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+}
+.badge.clean { background: rgba(0,255,136,0.1); color: var(--success); border: 1px solid rgba(0,255,136,0.2); }
+.badge.sus   { background: rgba(230,57,70,0.1);  color: var(--danger);  border: 1px solid rgba(230,57,70,0.2); }
+.badge.total { background: rgba(0,212,255,0.08); color: var(--accent2); border: 1px solid rgba(0,212,255,0.15); }
+.badge.closed { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+.badge.active { background: rgba(0,255,136,0.08); color: var(--success); border: 1px solid rgba(0,255,136,0.2); }
+
+.chevron { transition: 0.3s; color: var(--muted); font-size: 13px; }
+.session-block.open .chevron { transform: rotate(180deg); }
+
+/* TABLE */
+.session-body { display: none; padding: 18px 22px; }
+.session-block.open .session-body { display: block; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+    text-align: left; padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--muted);
+}
+tbody td { padding: 12px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+.flag-clean {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 700; color: var(--success);
+}
+.flag-sus {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 700; color: var(--danger);
+}
+.attempt-pill {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; background: rgba(245,158,11,0.1);
+    color: var(--warn); border: 1px solid rgba(245,158,11,0.2);
+}
+.attempt-pill.normal { background: rgba(0,255,136,0.06); color: var(--success); border-color: rgba(0,255,136,0.15); }
+
+/* EMPTY */
+.empty { text-align: center; padding: 60px; color: var(--muted); }
+.empty .icon { font-size: 50px; opacity: 0.2; margin-bottom: 16px; }
+.empty h3 { font-size: 17px; font-weight: 700; color: #64748b; margin-bottom: 6px; }
+
+@media(max-width: 700px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    table { font-size: 12px; }
+}
+</style>
+
+<div class="wrap">
+
+    <!-- HEADER -->
+    <div class="top-bar">
+        <div>
+            <h1><i class="fas fa-shield-alt" style="color:#7c3aed;margin-right:10px;"></i>Attendance <span>Integrity Report</span></h1>
+            <p>Monitor suspicious attendance activity — Dr. {{ doctor }}</p>
+        </div>
+        <a href="{{ url_for('doctor_dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    {% if report_data %}
+
+    <!-- OVERALL STATS -->
+    {% set total_all = namespace(v=0) %}
+    {% set sus_all   = namespace(v=0) %}
+    {% for row in report_data %}
+        {% set total_all.v = total_all.v + row.total %}
+        {% set sus_all.v   = sus_all.v   + row.suspicious %}
+    {% endfor %}
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="val blue">{{ total_all.v }}</div>
+            <div class="lbl">Total Records</div>
+        </div>
+        <div class="stat-card">
+            <div class="val green">{{ total_all.v - sus_all.v }}</div>
+            <div class="lbl">Clean Records</div>
+        </div>
+        <div class="stat-card">
+            <div class="val red">{{ sus_all.v }}</div>
+            <div class="lbl">Suspicious Records</div>
+        </div>
+    </div>
+
+    <!-- PER SESSION -->
+    {% for row in report_data %}
+    <div class="session-block" id="block-{{ loop.index }}">
+
+        <div class="session-header" onclick="toggle({{ loop.index }})">
+            <div class="session-info">
+                <h3>{{ row.session.session_name }}</h3>
+                <p>
+                    <i class="far fa-calendar-alt"></i>
+                    {{ row.session.created_at.strftime('%d %b %Y, %H:%M') if row.session.created_at else '—' }}
+                </p>
+            </div>
+            <div class="session-badges">
+                <span class="badge total"><i class="fas fa-users"></i> {{ row.total }} students</span>
+                <span class="badge clean"><i class="fas fa-check"></i> {{ row.clean }} clean</span>
+                {% if row.suspicious > 0 %}
+                <span class="badge sus"><i class="fas fa-exclamation-triangle"></i> {{ row.suspicious }} suspicious</span>
+                {% endif %}
+                <span class="badge {% if row.session.is_active %}active{% else %}closed{% endif %}">
+                    {{ "Active" if row.session.is_active else "Closed" }}
+                </span>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+        </div>
+
+        <div class="session-body">
+            {% if row.records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student Code</th>
+                        <th>Marked At</th>
+                        <th>IP Address</th>
+                        <th>Location</th>
+                        <th>Attempts</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in row.records %}
+                    <tr>
+                        <td style="color:var(--muted);">{{ loop.index }}</td>
+                        <td><strong>{{ r.student_code }}</strong></td>
+                        <td style="color:var(--muted);">
+                            {{ r.marked_at.strftime('%H:%M:%S') if r.marked_at else '—' }}
+                        </td>
+                        <td>
+                            {% if r.ip_address %}
+                                <span style="font-family:monospace;font-size:12px;color:var(--accent2);">{{ r.ip_address }}</span>
+                            {% else %}
+                                <span style="color:var(--muted);">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.latitude and r.longitude %}
+                                <a href="https://maps.google.com/?q={{ r.latitude }},{{ r.longitude }}"
+                                   target="_blank"
+                                   style="color:var(--accent2);font-size:12px;text-decoration:none;">
+                                    <i class="fas fa-map-marker-alt"></i> View Map
+                                </a>
+                            {% else %}
+                                <span style="color:var(--muted);">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="attempt-pill {% if (r.attempt_count or 1) == 1 %}normal{% endif %}">
+                                {{ r.attempt_count or 1 }}x
+                            </span>
+                        </td>
+                        <td>
+                            {% if r.is_suspicious %}
+                                <span class="flag-sus"><i class="fas fa-exclamation-triangle"></i> Suspicious</span>
+                            {% else %}
+                                <span class="flag-clean"><i class="fas fa-check-circle"></i> Clean</span>
+                            {% endif %}
+                        </td>
+                        <td style="color:var(--muted);font-size:12px;max-width:200px;">
+                            {{ r.suspicious_reason or '—' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color:var(--muted);text-align:center;padding:30px;font-size:14px;">
+                No attendance records for this session yet.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="empty">
+        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>No Attendance Sessions Found</h3>
+        <p>Create an attendance session from the dashboard to start tracking.</p>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+function toggle(idx) {
+    const block = document.getElementById('block-' + idx);
+    block.classList.toggle('open');
+}
+// Auto-open first block
+const first = document.querySelector('.session-block');
+if (first) first.classList.add('open');
+</script>
+
+{% endblock %}

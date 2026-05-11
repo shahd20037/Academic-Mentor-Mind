@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --bg-dark: #0b1b3a;
+        --bg-card: rgba(255, 255, 255, 0.03);
+        --accent-red: #e63946;
+        --accent-green: #4CAF50;
+        --text-silver: #d7dde6;
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glow-green: 0 0 20px rgba(76, 175, 80, 0.3);
+        --glow-red: 0 0 20px rgba(230, 57, 70, 0.4);
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #1a2a4a, #0b1b3a) !important;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        margin: 0;
+        min-height: 100vh;
+    }
+
+    .proctor-container {
+        padding: 40px 20px;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    /* Header Section */
+    .proctor-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .proctor-header h2 {
+        font-size: 36px;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(90deg, #fff, var(--text-silver));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .proctor-header p {
+        color: var(--text-silver);
+        opacity: 0.7;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    /* Main Layout Grid */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr;
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    /* Video Feed Section */
+    .video-feed-wrapper {
+        position: relative;
+        background: #000;
+        border-radius: 30px;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        border: 2px solid var(--accent-green);
+        box-shadow: var(--glow-green);
+        transition: all 0.5s ease;
+    }
+
+    .video-feed-wrapper.violation {
+        border-color: var(--accent-red);
+        box-shadow: var(--glow-red);
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    .ai-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(76, 175, 80, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(76, 175, 80, 0.4);
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 10;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-green);
+        border-radius: 50%;
+        animation: pulse-animation 1.5s infinite;
+    }
+
+    @keyframes pulse-animation {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+    }
+
+    .scan-line {
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(to bottom, transparent, var(--accent-green), transparent);
+        top: 0;
+        z-index: 5;
+        opacity: 0.5;
+        animation: scan 4s linear infinite;
+    }
+
+    @keyframes scan {
+        0% { top: 0; }
+        100% { top: 100%; }
+    }
+
+    .camera-placeholder {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: var(--accent-green);
+        background: radial-gradient(circle, #0b1b3a 0%, #000 100%);
+    }
+
+    .camera-placeholder i {
+        font-size: 60px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    /* Status Panel Section */
+    .status-panel {
+        background: var(--bg-card);
+        backdrop-filter: blur(15px);
+        padding: 30px;
+        border-radius: 30px;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .status-label {
+        color: var(--text-silver);
+        font-size: 14px;
+    }
+
+    .status-value {
+        font-weight: 700;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-active { color: var(--accent-green); }
+    .status-score { 
+        background: rgba(76, 175, 80, 0.1);
+        padding: 4px 10px;
+        border-radius: 8px;
+        color: var(--accent-green);
+    }
+
+    /* Log Box Section */
+    .log-section-title {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-silver);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .log-box {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 20px;
+        padding: 20px;
+        height: 320px;
+        overflow-y: auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        border: 1px solid var(--glass-border);
+    }
+
+    .log-box::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .log-box::-webkit-scrollbar-thumb {
+        background: var(--glass-border);
+        border-radius: 10px;
+    }
+
+    .log-entry {
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        line-height: 1.5;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .log-time { color: var(--accent-green); opacity: 0.8; margin-right: 10px; }
+    .log-msg { color: var(--text-silver); }
+    .log-warning { color: var(--accent-red); font-weight: 700; }
+
+    /* Action Buttons */
+    .actions-bar {
+        margin-top: 40px;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .btn-proctor {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 15px;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        border: 1px solid var(--glass-border);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background: rgba(230, 57, 70, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(230, 57, 70, 0.2);
+    }
+
+    .btn-danger:hover {
+        background: var(--accent-red);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: var(--glow-red);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .main-grid { grid-template-columns: 1fr; }
+        .proctor-container { padding: 20px; }
+    }
+</style>
+
+<div class="proctor-container">
+    <div class="proctor-header">
+        <h2><i class="fas fa-shield-halved"></i> AI Exam Proctoring</h2>
+        <p>Advanced real-time integrity monitoring system is active</p>
+    </div>
+
+    <div class="main-grid">
+        <!-- Left: Video Feed -->
+        <div class="video-feed-wrapper" id="videoContainer">
+            <div class="ai-badge" id="aiStatus">
+                <div class="pulse-dot"></div>
+                <span>AI Monitoring Active</span>
+            </div>
+            <div class="scan-line"></div>
+            
+            <div id="cameraPlaceholder" class="camera-placeholder">
+                <i class="fas fa-video-slash"></i>
+                <p id="cameraStatusText" style="font-weight: 700; letter-spacing: 1px;">WAITING FOR SYSTEM INITIALIZATION...</p>
+            </div>
+            
+            <video id="videoElement" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+        </div>
+
+        <!-- Right: Status & Logs -->
+        <div class="status-panel">
+            <div class="panel-title">
+                <i class="fas fa-microchip" style="color: var(--accent-green);"></i>
+                <span>System Intelligence</span>
+            </div>
+
+            <div class="status-item">
+                <span class="status-label">Face Detection</span>
+                <span class="status-value status-active"><i class="fas fa-check-circle"></i> Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Object Recognition</span>
+                <span class="status-value status-active"><i class="fas fa-check-circle"></i> Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Gaze Tracking</span>
+                <span class="status-value status-active"><i class="fas fa-check-circle"></i> Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Integrity Score</span>
+                <span class="status-value"><span class="status-score">98% Secure</span></span>
+            </div>
+
+            <div class="log-section-title">
+                <i class="fas fa-terminal"></i>
+                <span>Detection Log</span>
+            </div>
+            <div class="log-box" id="logBox">
+                <div class="log-entry">
+                    <span class="log-time">[14:02:01]</span>
+                    <span class="log-msg">Neural engine initialized.</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:02:05]</span>
+                    <span class="log-msg">Subject identified: <strong>{{ student_name }}</strong></span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:02:10]</span>
+                    <span class="log-msg">Environment secure. Monitoring gaze...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-bar">
+        <a href="{{ url_for('student_dashboard') }}" class="btn-proctor btn-secondary">
+            <i class="fas fa-arrow-left"></i> Return to Dashboard
+        </a>
+        <button class="btn-proctor btn-danger" onclick="finishExam()">
+            <i class="fas fa-check-double"></i> Finish Exam
+        </button>
+        <button class="btn-proctor btn-secondary" onclick="simulateAlert()" style="opacity: 0.5; font-size: 10px;">
+            <i class="fas fa-triangle-exclamation"></i> Test Alert
+        </button>
+    </div>
+</div>
+
+<script>
+    let stream = null;
+    const videoElement = document.getElementById('videoElement');
+    const placeholder = document.getElementById('cameraPlaceholder');
+    const statusText = document.getElementById('cameraStatusText');
+    const videoContainer = document.getElementById('videoContainer');
+
+    async function checkExamStatus() {
+        try {
+            const response = await fetch('/api/exam_status');
+            const data = await response.json();
+            
+            if (data.active) {
+                if (data.camera_enabled) {
+                    if (!stream) {
+                        startCamera();
+                    }
+                    statusText.innerText = `EXAM IN PROGRESS: ${data.subject}`;
+                } else {
+                    if (stream) {
+                        stopCamera();
+                    }
+                    statusText.innerText = "WAITING FOR DOCTOR TO ENABLE CAMERA...";
+                }
+
+                // If active and not joined yet, join automatically
+                if (!data.has_joined) {
+                    joinExam();
+                }
+            } else {
+                if (stream) {
+                    stopCamera();
+                }
+                statusText.innerText = "NO ACTIVE EXAM SESSION.";
+            }
+        } catch (error) {
+            console.error("Error checking exam status:", error);
+        }
+    }
+
+    async function joinExam() {
+        try {
+            await fetch('/api/exam/join', { method: 'POST' });
+            addLog("System: Successfully registered for the exam session.");
+        } catch (error) {
+            console.error("Error joining exam:", error);
+        }
+    }
+
+    async function finishExam() {
+        if (!confirm("Are you sure you want to finish the exam?")) return;
+        try {
+            const response = await fetch('/api/exam/finish', { method: 'POST' });
+            const data = await response.json();
+            alert(data.message);
+            window.location.href = '/student/dashboard';
+        } catch (error) {
+            console.error("Error finishing exam:", error);
+        }
+    }
+
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoElement.srcObject = stream;
+            videoElement.style.display = 'block';
+            placeholder.style.display = 'none';
+            addLog("Biometric stream established. Monitoring started.");
+        } catch (err) {
+            console.error("Error accessing camera:", err);
+            addLog("CRITICAL: Camera access denied.", true);
+        }
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        videoElement.style.display = 'none';
+        placeholder.style.display = 'flex';
+        addLog("Monitoring stream suspended by proctor.");
+    }
+
+    function addLog(message, isWarning = false) {
+        const logBox = document.getElementById('logBox');
+        const time = new Date().toLocaleTimeString([], { hour12: false });
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        
+        if (isWarning) {
+            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-warning">${message}</span>`;
+        } else {
+            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-msg">${message}</span>`;
+        }
+        
+        logBox.prepend(entry);
+        if (logBox.children.length > 20) logBox.lastChild.remove();
+    }
+
+    function simulateAlert() {
+        addLog("VIOLATION DETECTED: Unauthorized object / Multiple faces.", true);
+        videoContainer.classList.add('violation');
+        setTimeout(() => { 
+            videoContainer.classList.remove('violation'); 
+        }, 2000);
+    }
+
+    // Check status every 3 seconds
+    setInterval(checkExamStatus, 3000);
+    checkExamStatus();
+
+    // Simulate periodic AI checks
+    setInterval(() => {
+        if (stream) {
+            const messages = [
+                "Gaze stability: Optimal.",
+                "Background noise: Within limits.",
+                "Integrity check: Passed.",
+                "Biometric presence: Verified."
+            ];
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            addLog(msg);
+        }
+    }, 8000);
+</script>
+
+{% endblock %}

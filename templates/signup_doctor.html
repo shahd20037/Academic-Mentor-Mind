@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --bg-dark: #050a15;
+        --card-bg: rgba(13, 25, 48, 0.7);
+        --accent-gradient: linear-gradient(90deg, #4f46e5, #9333ea);
+        --text-main: #ffffff;
+        --text-dim: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #1e293b 0%, #050a15 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--text-main);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .signup-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 48px;
+        width: 100%;
+        max-width: 600px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-accent-line {
+        position: absolute;
+        top: 48px;
+        left: 48px;
+        width: 40px;
+        height: 4px;
+        background: #a855f7;
+        border-radius: 2px;
+    }
+
+    .role-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #a855f7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        display: block;
+        text-align: right;
+    }
+
+    .signup-title {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        text-align: right;
+        letter-spacing: -1px;
+    }
+
+    .signup-subtitle {
+        font-size: 16px;
+        color: var(--text-dim);
+        text-align: right;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .input-control {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: white;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .input-control:focus {
+        outline: none;
+        border-color: #a855f7;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(90deg, #a855f7, #ec4899);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        margin-top: 12px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .login-link-container {
+        margin-top: 32px;
+        text-align: center;
+        font-size: 14px;
+        color: var(--text-dim);
+    }
+
+    .login-link {
+        color: #a855f7;
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 4px;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
+
+    .msg-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        text-align: center;
+    }
+</style>
+
+<div class="signup-card">
+    <div class="card-accent-line"></div>
+    
+    <span class="role-label">DOCTOR REGISTRATION</span>
+    <h1 class="signup-title">Instructor Join</h1>
+    <p class="signup-subtitle">Create your faculty account to manage courses and students.</p>
+
+    {% if error %}
+        <div class="msg-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('register_doctor') }}">
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" name="doctor_username" class="input-control" placeholder="Enter your username" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="doctor_name" class="input-control" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="doctor_email" class="input-control" placeholder="name@university.edu" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" name="doctor_department" class="input-control" placeholder="e.g., Computer Science" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="doctor_password" class="input-control" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" name="doctor_confirm_password" class="input-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Create Doctor Account</button>
+    </form>
+
+    <div class="login-link-container">
+        Already have an account? 
+        <a href="{{ url_for('login') }}" class="login-link">Login here</a>
+    </div>
+</div>
+
+{% endblock %}
+
+
+live
+
+Jump to live

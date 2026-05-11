@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== PAGE ===== */
+body {
+  background: #0f172a;
+  font-family: 'Inter', sans-serif;
+  color: white;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #00d4ff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header p {
+  color: #94a3b8;
+}
+
+/* ===== GRID ===== */
+.geo-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+}
+
+/* ===== CARD ===== */
+.geo-card {
+  width: 220px;
+  padding: 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  text-align: center;
+  transition: 0.3s;
+}
+
+.geo-card:hover {
+  transform: translateY(-8px);
+  border-color: #00d4ff;
+}
+
+/* ===== CIRCLE ===== */
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  position: relative;
+  font-size: 18px;
+}
+
+/* LEVEL COLORS */
+.low {
+  background: conic-gradient(#22c55e 0% 30%, rgba(255,255,255,0.1) 0%);
+}
+
+.medium {
+  background: conic-gradient(#eab308 0% 60%, rgba(255,255,255,0.1) 0%);
+}
+
+.high {
+  background: conic-gradient(#ef4444 0% 85%, rgba(255,255,255,0.1) 0%);
+}
+
+/* percent text */
+.percent {
+  position: absolute;
+  color: white;
+}
+
+/* ===== TEXT ===== */
+.label {
+  margin-top: 15px;
+  font-weight: 700;
+}
+
+.hint {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 6px;
+}
+
+/* ===== EMPTY ===== */
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: #64748b;
+}
+
+</style>
+
+<div class="container">
+
+  <div class="header">
+    <h1>Weak Points Analysis</h1>
+    <p>Your personalized learning gaps & improvement roadmap</p>
+  </div>
+
+  {% if weakpoints %}
+
+  <div class="geo-container">
+
+    {% for w in weakpoints %}
+
+    <div class="geo-card">
+
+      <div class="circle {{ w.level|lower }}">
+        <div class="percent">
+          {% if w.level == "High" %}
+            85%
+          {% elif w.level == "Medium" %}
+            60%
+          {% else %}
+            30%
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="label">{{ w.subject }}</div>
+      <div class="hint">{{ w.suggestion }}</div>
+
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+  {% else %}
+
+  <div class="empty">
+    <h2>No weak points detected 🎉</h2>
+    <p>Keep going, you're doing great!</p>
+  </div>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

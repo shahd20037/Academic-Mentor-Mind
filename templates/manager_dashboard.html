@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+    --bg: #0a0f1e;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.1);
+    --accent: #e63946;
+    --blue: #00d4ff;
+    --green: #00ff88;
+    --gold: #fbbf24;
+    --text: #d7dde6;
+}
+* { box-sizing: border-box; }
+body { background: radial-gradient(ellipse at top, #111827, #0a0f1e 70%); font-family: 'Inter', sans-serif; color: #fff; min-height: 100vh; }
+.wrap { max-width: 1300px; margin: 0 auto; padding: 32px 20px; }
+
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 22px 30px; background: var(--card); border: 1px solid var(--border); border-radius: 22px; backdrop-filter: blur(14px); }
+.top-bar h1 { font-size: 26px; font-weight: 800; margin: 0; }
+.top-bar h1 span { color: var(--accent); }
+.top-bar p { color: var(--text); font-size: 13px; margin-top: 4px; }
+.top-bar a { color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600; padding: 8px 16px; border: 1px solid var(--border); border-radius: 10px; white-space: nowrap; }
+.top-bar a:hover { background: rgba(255,255,255,0.07); }
+
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 28px 30px; margin-bottom: 28px; backdrop-filter: blur(12px); }
+.section-title { font-size: 18px; font-weight: 800; margin-bottom: 22px; display: flex; align-items: center; gap: 10px; }
+.section-title i { color: var(--accent); }
+
+.search-row { display: flex; gap: 12px; }
+.search-row input { flex: 1; padding: 13px 18px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
+.search-row input:focus { border-color: var(--blue); }
+.btn-search { padding: 13px 26px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: 0.2s; white-space: nowrap; }
+.btn-search:hover { background: #c62b38; }
+
+.alert-err { margin-top: 18px; padding: 14px 18px; background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.25); border-radius: 12px; color: #ff8a8a; font-size: 14px; }
+
+.student-card { margin-top: 26px; display: grid; grid-template-columns: auto 1fr; gap: 30px; padding: 26px; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,212,255,0.15); border-radius: 18px; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.student-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--blue); box-shadow: 0 0 22px rgba(0,212,255,0.3); flex-shrink: 0; }
+.student-avatar-placeholder { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #1e293b, #0f172a); border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 46px; color: var(--text); }
+
+.student-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-bottom: 22px; }
+.info-item { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 14px; }
+.info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 4px; }
+.info-value { font-size: 14px; font-weight: 700; color: #fff; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+.badge-Low { background: rgba(0,255,136,0.12); color: #00ff88; }
+.badge-Medium { background: rgba(251,191,36,0.12); color: #fbbf24; }
+.badge-High { background: rgba(230,57,70,0.12); color: #e63946; }
+
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.chart-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.chart-box h4 { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+.tab-btn { padding: 9px 18px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tab-btn:hover:not(.active) { background: rgba(255,255,255,0.07); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+.msg-form { display: flex; flex-direction: column; gap: 14px; }
+.msg-note { color: var(--text); font-size: 13px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--blue); }
+.msg-note.green { border-left-color: var(--green); }
+.msg-note.gold { border-left-color: var(--gold); }
+.msg-note.red { border-left-color: var(--accent); }
+
+.form-input { padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; outline: none; transition: 0.2s; width: 100%; max-width: 400px; }
+.form-input:focus { border-color: var(--blue); }
+.form-select { padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(30,41,59,0.9); color: #fff; font-size: 14px; outline: none; cursor: pointer; width: 100%; max-width: 400px; }
+
+textarea.msg-area { width: 100%; min-height: 110px; padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; font-size: 14px; font-family: inherit; resize: vertical; outline: none; transition: 0.2s; }
+textarea.msg-area:focus { border-color: var(--blue); }
+
+.btn-send-msg { padding: 12px 26px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+.btn-send-msg:hover { background: #c62b38; transform: translateY(-1px); }
+
+.opinion-card { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 16px 18px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+.opinion-card:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); }
+.btn-del { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; padding: 5px 12px; border-radius: 7px; font-size: 12px; cursor: pointer; transition: 0.2s; }
+.btn-del:hover { background: rgba(239,68,68,0.2); }
+
+.flash { padding: 14px 20px; border-radius: 12px; margin-bottom: 22px; font-weight: 600; font-size: 14px; }
+.flash.success { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.2); color: #00ff88; }
+.flash.error { background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.2); color: #e63946; }
+
+.empty-state { text-align: center; padding: 50px; color: #475569; }
+.empty-state i { font-size: 40px; display: block; margin-bottom: 12px; }
+
+@media(max-width:768px) {
+    .student-card { grid-template-columns: 1fr; text-align: center; }
+    .charts-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="wrap">
+
+    <div class="top-bar">
+        <div>
+            <h1><i class="fas fa-user-shield" style="color:var(--accent);margin-right:10px;"></i>Manager <span>Dashboard</span></h1>
+            <p>Full control panel — student profiles, messaging & feedback</p>
+        </div>
+        <a href="{{ url_for('home_page') }}"><i class="fas fa-arrow-left" style="margin-right:6px;"></i>Back</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}{% for cat, msg in messages %}
+        <div class="flash {{ 'success' if cat == 'success' else 'error' }}">
+            <i class="fas fa-{{ 'check-circle' if cat == 'success' else 'exclamation-circle' }}" style="margin-right:8px;"></i>{{ msg }}
+        </div>
+        {% endfor %}{% endif %}
+    {% endwith %}
+
+    <!-- ═══════════════════════════ STUDENT SEARCH ═══════════════════════════ -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-search"></i>Search Student Profile</div>
+
+        <form method="GET">
+            <div class="search-row">
+                <input type="text" name="search_code" placeholder="Enter student code (e.g. S100000)..." value="{{ search_code }}">
+                <button type="submit" class="btn-search"><i class="fas fa-search" style="margin-right:6px;"></i>Search</button>
+            </div>
+        </form>
+
+        {% if error_msg %}
+        <div class="alert-err"><i class="fas fa-exclamation-triangle" style="margin-right:8px;"></i>{{ error_msg }}</div>
+        {% endif %}
+
+        {% if student_data %}
+        <div class="student-card">
+            <div>
+                {% if student_db and student_db.image %}
+                    <img class="student-avatar" src="{{ url_for('static', filename=student_db.image) }}" alt="Photo">
+                {% else %}
+                    <div class="student-avatar-placeholder"><i class="fas fa-user-graduate"></i></div>
+                {% endif %}
+            </div>
+
+            <div>
+                <div style="margin-bottom:18px;">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <h2 style="font-size:22px;font-weight:800;margin:0;">{{ student_data.get('name', 'Unknown') }}</h2>
+                        <span style="color:var(--text);font-size:13px;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:6px;">{{ search_code }}</span>
+                        {% set risk = student_data.get('risk_level','') %}
+                        {% if risk %}<span class="badge badge-{{ risk }}">{{ risk }} Risk</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="student-info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value" style="font-size:12px;">{{ student_data.get('email', '—') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">{{ student_data.get('department', '—') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Level</div>
+                        <div class="info-value">{{ student_data.get('level', '—') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">College</div>
+                        <div class="info-value" style="font-size:12px;">{{ student_data.get('College_of', student_data.get('college_of', '—')) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">GPA</div>
+                        <div class="info-value" style="color:var(--blue);">{{ student_data.get('GPA', student_data.get('gpa', '—')) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Previous GPA</div>
+                        <div class="info-value">{{ student_data.get('Previous GPA', student_data.get('previous_gpa', '—')) }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Study Hours</div>
+                        <div class="info-value">{{ student_data.get('study_hours', '—') }} hrs</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Mood</div>
+                        <div class="info-value">{{ student_data.get('mood', '—') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Fail Probability</div>
+                        <div class="info-value" style="color:var(--accent);">
+                            {% set fp = student_data.get('fail_probability', 0) or 0 %}
+                            {{ (fp * 100)|round(1) }}%
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Participation</div>
+                        <div class="info-value">{{ student_data.get('participation', '—') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Class Interaction</div>
+                        <div class="info-value">{{ student_data.get('Class Interaction', student_data.get('class_interaction', '—')) }}</div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
+                    <div class="chart-box">
+                        <h4><i class="fas fa-chart-bar" style="color:var(--accent);margin-right:6px;"></i>Academic Scores</h4>
+                        <canvas id="barChart" height="200"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h4><i class="fas fa-chart-radar" style="color:var(--blue);margin-right:6px;"></i>Performance Radar</h4>
+                        <canvas id="radarChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Attendance','Assignment','Midterm','Practical','Project','Final','Quiz','Oral'],
+                datasets: [{
+                    label: 'Score',
+                    data: [
+                        {{ student_data.get('attendance', 0)|int }},
+                        {{ student_data.get('assignment_avg', student_data.get('assignments', 0))|int }},
+                        {{ student_data.get('midterm', 0)|int }},
+                        {{ student_data.get('practical', 0)|int }},
+                        {{ student_data.get('project', 0)|int }},
+                        {{ student_data.get('final', 0)|int }},
+                        {{ student_data.get('quiz_avg', 0)|int }},
+                        {{ student_data.get('oral_avg', 0)|int }}
+                    ],
+                    backgroundColor: ['rgba(0,212,255,0.45)','rgba(0,255,136,0.45)','rgba(230,57,70,0.45)','rgba(251,191,36,0.45)','rgba(167,139,250,0.45)','rgba(249,115,22,0.45)','rgba(20,184,166,0.45)','rgba(236,72,153,0.45)'],
+                    borderColor: ['#00d4ff','#00ff88','#e63946','#fbbf24','#a78bfa','#f97316','#14b8a6','#ec4899'],
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 0, max: 100 }
+                }
+            }
+        });
+
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Attendance','Midterm','Final','Project','Quiz','Participation'],
+                datasets: [{
+                    label: 'Performance',
+                    data: [
+                        {{ student_data.get('attendance', 0)|int }},
+                        {{ student_data.get('midterm', 0)|int }},
+                        {{ student_data.get('final', 0)|int }},
+                        {{ student_data.get('project', 0)|int }},
+                        {{ student_data.get('quiz_avg', 0)|int }},
+                        {{ student_data.get('participation', 0)|int }}
+                    ],
+                    fill: true,
+                    backgroundColor: 'rgba(0,212,255,0.1)',
+                    borderColor: '#00d4ff',
+                    pointBackgroundColor: '#00d4ff',
+                    pointBorderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#d7dde6', font: { size: 11 } } } },
+                scales: {
+                    r: {
+                        min: 0, max: 100,
+                        ticks: { color: '#64748b', backdropColor: 'transparent', font: { size: 9 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        pointLabels: { color: '#94a3b8', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+        </script>
+        {% endif %}
+    </div>
+
+    <!-- ═══════════════════════════ MESSAGING ═══════════════════════════ -->
+    <div class="section">
+        <div class="section-title"><i class="fas fa-paper-plane"></i>Messaging Center</div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('all', this)"><i class="fas fa-globe" style="margin-right:6px;"></i>All</button>
+            <button class="tab-btn" onclick="switchTab('all-students', this)"><i class="fas fa-users" style="margin-right:6px;"></i>All Students</button>
+            <button class="tab-btn" onclick="switchTab('one-student', this)"><i class="fas fa-user" style="margin-right:6px;"></i>Specific Student</button>
+            <button class="tab-btn" onclick="switchTab('all-doctors', this)"><i class="fas fa-user-md" style="margin-right:6px;"></i>All Doctors</button>
+            <button class="tab-btn" onclick="switchTab('one-doctor', this)"><i class="fas fa-stethoscope" style="margin-right:6px;"></i>Specific Doctor</button>
+        </div>
+
+        <div class="tab-panel active" id="tab-all">
+            <form class="msg-form" method="POST" action="{{ url_for('send_manager_message') }}">
+                <input type="hidden" name="message_type" value="all">
+                <div class="msg-note"><i class="fas fa-info-circle" style="color:var(--blue);margin-right:6px;"></i>Sends to <strong>all students</strong> (visible in Manager Messages) and <strong>all doctors</strong> (visible in Activity Log).</div>
+                <textarea class="msg-area" name="message" placeholder="Write your broadcast message here..." required></textarea>
+                <button type="submit" class="btn-send-msg"><i class="fas fa-paper-plane"></i>Send to Everyone</button>
+            </form>
+        </div>
+
+        <div class="tab-panel" id="tab-all-students">
+            <form class="msg-form" method="POST" action="{{ url_for('send_manager_message') }}">
+                <input type="hidden" name="message_type" value="students">
+                <div class="msg-note green"><i class="fas fa-info-circle" style="color:var(--green);margin-right:6px;"></i>Sends to <strong>all students</strong> — visible in their Manager Messages page.</div>
+                <textarea class="msg-area" name="message" placeholder="Write message to all students..." required></textarea>
+                <button type="submit" class="btn-send-msg"><i class="fas fa-users"></i>Send to All Students</button>
+            </form>
+        </div>
+
+        <div class="tab-panel" id="tab-one-student">
+            <form class="msg-form" method="POST" action="{{ url_for('send_manager_message') }}">
+                <input type="hidden" name="message_type" value="one_student">
+                <div class="msg-note gold"><i class="fas fa-info-circle" style="color:var(--gold);margin-right:6px;"></i>Send to a <strong>specific student</strong> by their code — visible in their Manager Messages page.</div>
+                <input class="form-input" type="text" name="target_code" placeholder="Student code (e.g. S100000)" required>
+                <textarea class="msg-area" name="message" placeholder="Write message to this student..." required></textarea>
+                <button type="submit" class="btn-send-msg"><i class="fas fa-user"></i>Send to Student</button>
+            </form>
+        </div>
+
+        <div class="tab-panel" id="tab-all-doctors">
+            <form class="msg-form" method="POST" action="{{ url_for('send_manager_message') }}">
+                <input type="hidden" name="message_type" value="doctors">
+                <div class="msg-note red"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:6px;"></i>Sends to <strong>all doctors</strong> — visible in their Activity Log.</div>
+                <textarea class="msg-area" name="message" placeholder="Write message to all doctors..." required></textarea>
+                <button type="submit" class="btn-send-msg"><i class="fas fa-user-md"></i>Send to All Doctors</button>
+            </form>
+        </div>
+
+        <div class="tab-panel" id="tab-one-doctor">
+            <form class="msg-form" method="POST" action="{{ url_for('send_manager_message') }}">
+                <input type="hidden" name="message_type" value="one_doctor">
+                <div class="msg-note red"><i class="fas fa-info-circle" style="color:var(--accent);margin-right:6px;"></i>Send to a <strong>specific doctor</strong> — visible in their Activity Log.</div>
+                {% if all_doctors %}
+                <select class="form-select" name="target_doctor" required>
+                    <option value="" disabled selected>-- Select Doctor --</option>
+                    {% for doc in all_doctors %}
+                    <option value="{{ doc.username }}">{{ doc.username }}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <input class="form-input" type="text" name="target_doctor" placeholder="Doctor username (e.g. dr_osama)" required>
+                {% endif %}
+                <textarea class="msg-area" name="message" placeholder="Write message to this doctor..." required></textarea>
+                <button type="submit" class="btn-send-msg"><i class="fas fa-stethoscope"></i>Send to Doctor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════ OPINIONS ═══════════════════════════ -->
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-comment-dots"></i>Student Opinions & Feedback
+            <span style="font-size:13px;font-weight:400;color:var(--text);margin-left:6px;">({{ all_opinions|length }} total)</span>
+        </div>
+
+        {% if all_opinions %}
+            {% for op in all_opinions %}
+            <div class="opinion-card">
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+                        <span style="background:rgba(0,212,255,0.1);color:var(--blue);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;">{{ op.student_code }}</span>
+                        <span style="font-size:11px;color:#475569;">{{ op.created_at.strftime('%d %b %Y, %H:%M') if op.created_at else '' }}</span>
+                    </div>
+                    <div style="color:var(--text);font-size:14px;line-height:1.6;">{{ op.feedback if op.feedback else '—' }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:110px;margin-left:16px;">
+                    <div>{% set r = op.rating %}{% for i in range(5) %}<span style="color:{{ '#fbbf24' if i < r else 'rgba(255,255,255,0.15)' }};font-size:18px;">★</span>{% endfor %}</div>
+                    <form method="POST" action="/manager/delete_opinion/{{ op.id }}" onsubmit="return confirm('Delete this opinion?');">
+                        <button type="submit" class="btn-del">✕ Remove</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state"><i class="fas fa-comment-slash"></i><p>No opinions submitted yet.</p></div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
+
+{% endblock %}

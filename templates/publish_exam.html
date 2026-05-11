@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .exam-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+    .card {
+        background: rgba(17, 24, 39, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(10px);
+    }
+    .status-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .status-table th, .status-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-not-entered { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+    .status-entered { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .status-locked { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .status-finished { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    
+    .btn-grade {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: 0.3s;
+    }
+    .btn-grade:hover { background: #2563eb; }
+    
+    .publish-form input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 12px;
+        color: white;
+        width: 100%;
+        margin-bottom: 16px;
+    }
+    .btn-publish {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+</style>
+
+<div class="exam-container">
+    <div class="card">
+        <h2>Publish New Exam</h2>
+        <form action="{{ url_for('start_exam') }}" method="POST" class="publish-form">
+            <input type="text" name="subject_name" placeholder="Enter Subject Name" required>
+            <button type="submit" class="btn-publish">Publish Exam</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Exam Live Monitoring</h2>
+            <button onclick="updateStats()" class="btn-grade" style="background: rgba(255,255,255,0.1);">Refresh Data</button>
+        </div>
+        <div id="activeExamInfo" style="margin-top: 10px; color: #3b82f6; font-weight: 600;"></div>
+        
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Code</th>
+                    <th>Status</th>
+                    <th>Joined At</th>
+                    <th>Score</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="statsBody">
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">Loading exam data...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let currentExamId = null;
+
+    function updateStats() {
+        fetch('/api/doctor/exam_stats')
+        .then(r => r.json())
+        .then(data => {
+            const body = document.getElementById('statsBody');
+            const info = document.getElementById('activeExamInfo');
+            
+            if (!data.active) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">No active exam session.</td></tr>';
+                info.innerText = "";
+                return;
+            }
+            
+            currentExamId = data.exam_id;
+            info.innerText = "Active Exam: " + data.subject;
+            
+            let html = '';
+            data.students.forEach(s => {
+                let statusClass = 'status-not-entered';
+                let statusText = 'Not Entered';
+                
+                if (s.status === 'entered') { statusClass = 'status-entered'; statusText = 'In Exam'; }
+                else if (s.status === 'finished') { statusClass = 'status-finished'; statusText = 'Finished'; }
+                else if (s.status === 'locked') { statusClass = 'status-locked'; statusText = 'Locked'; }
+                
+                html += `
+                    <tr>
+                        <td>${s.name}</td>
+                        <td>${s.code}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${s.joined_at || '-'}</td>
+                        <td id="score-${s.code}">${s.score !== null ? s.score : '-'}</td>
+                        <td>
+                            <button onclick="uploadGrade('${s.code}')" class="btn-grade">
+                                <i class="fas fa-upload"></i> Upload Grade
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            body.innerHTML = html;
+        });
+    }
+
+    function uploadGrade(studentCode) {
+        const score = prompt("Enter grade for student " + studentCode + ":");
+        if (score === null || score === "") return;
+        
+        const formData = new FormData();
+        formData.append('student_code', studentCode);
+        formData.append('exam_id', currentExamId);
+        formData.append('score', score);
+        
+        fetch('/doctor/upload_grade', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert("Grade uploaded successfully!");
+                updateStats();
+            } else {
+                alert(data.error || "Failed to upload grade");
+            }
+        });
+    }
+
+    // Update every 5 seconds
+    setInterval(updateStats, 5000);
+    updateStats();
+</script>
+
+{% endblock %}

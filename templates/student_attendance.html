@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+body{
+    margin:0;
+    background: radial-gradient(circle at top,#0f172a,#050816);
+    color:white;
+    font-family:Segoe UI;
+}
+
+.container{
+    text-align:center;
+    padding:50px;
+}
+
+.card{
+    display:inline-block;
+    padding:30px;
+    background:rgba(255,255,255,0.05);
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(0,212,255,0.2);
+}
+
+h2{
+    color:#00d4ff;
+    margin-bottom:20px;
+}
+
+p{
+    opacity:0.8;
+}
+
+.qr-img{
+    margin-top:20px;
+    width:260px;
+    height:260px;
+    border-radius:15px;
+    background:white;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.status-active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid #10b981;
+}
+
+.status-closed {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+</style>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>📋 Attendance QR Code</h2>
+
+        <p>Student ID: {{ student_code }}</p>
+
+        {% if qr_code %}
+            <img class="qr-img" src="data:image/png;base64,{{ qr_code }}">
+            <div class="status-badge status-active">
+                <i class="fas fa-check-circle"></i> Attendance Session is Open
+            </div>
+            <p style="margin-top:15px; font-size:13px;">
+                Show this QR to your doctor to mark attendance
+            </p>
+            <script>
+                // Auto-mark attendance for the student if they are on this page
+                // This simulates the QR being scanned
+                fetch('/student/attendance/mark', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: '{{ active_session.qr_code_token }}' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.message);
+                });
+            </script>
+        {% else %}
+            <div style="padding: 40px;">
+                <i class="fas fa-clock fa-3x" style="color: #9ca3af; margin-bottom: 20px;"></i>
+                <p>No active attendance session at the moment.</p>
+                <div class="status-badge status-closed">
+                    Attendance Closed
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

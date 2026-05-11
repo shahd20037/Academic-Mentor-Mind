@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background:
+        radial-gradient(circle at 20% 20%, #0f172a, transparent 40%),
+        radial-gradient(circle at 80% 30%, #0b2a3d, transparent 45%),
+        radial-gradient(circle at 50% 80%, #020617, #000);
+    color: white;
+    min-height: 100vh;
+}
+.wrap { max-width: 560px; margin: 60px auto; padding: 20px; }
+.card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 24px;
+    padding: 40px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 50px rgba(0,212,255,0.07);
+}
+.back {
+    display: inline-block; margin-bottom: 28px;
+    color: #00d4ff; text-decoration: none;
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 9px 16px; border-radius: 10px; font-size: 13px; transition: 0.25s;
+}
+.back:hover { background: #00d4ff; color: #000; }
+h2 { margin: 0 0 6px; font-size: 26px; font-weight: 900;
+    background: linear-gradient(90deg, #00d4ff, #00ff88);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { color: #64748b; font-size: 14px; margin-bottom: 32px; }
+.field-label { font-size: 12px; color: #64748b; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+
+/* Stars - row-reverse trick for CSS sibling selector */
+.stars { display: flex; flex-direction: row-reverse; justify-content: flex-end;
+    gap: 6px; margin-bottom: 28px; }
+.stars input { display: none; }
+.stars label { font-size: 38px; cursor: pointer;
+    color: rgba(255,255,255,0.15); transition: color 0.15s, transform 0.15s; }
+.stars label:hover { transform: scale(1.15); }
+.stars input:checked ~ label,
+.stars label:hover,
+.stars label:hover ~ label { color: #fbbf24; }
+
+textarea {
+    width: 100%; min-height: 120px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 14px 16px; color: white;
+    font-size: 14px; font-family: inherit; resize: vertical;
+    outline: none; box-sizing: border-box; transition: border-color 0.2s;
+}
+textarea::placeholder { color: #475569; }
+textarea:focus { border-color: rgba(0,212,255,0.5); }
+.submit-btn {
+    width: 100%; margin-top: 24px; padding: 15px;
+    background: linear-gradient(135deg, #00d4ff, #00ff88);
+    color: #0f172a; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+    letter-spacing: 1px; transition: opacity 0.2s, transform 0.15s;
+}
+.submit-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.success-box { display:none; text-align:center; padding: 32px 20px; }
+</style>
+
+<div class="wrap">
+    <a href="{{ url_for('student_dashboard') }}" class="back">&#11013; Back</a>
+    <div class="card">
+
+        <!-- Success -->
+        <div class="success-box" id="successBox">
+            <div style="font-size:56px; margin-bottom:16px;">&#10003;</div>
+            <h3 style="background:linear-gradient(90deg,#00d4ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent; margin:0 0 8px;">Opinion Sent!</h3>
+            <p style="color:#64748b; font-size:14px;">Your feedback has been received and will be reviewed by the manager.</p>
+            <a href="{{ url_for('student_dashboard') }}" style="display:inline-block;margin-top:20px;color:#00d4ff;text-decoration:none;border:1px solid rgba(0,212,255,0.3);padding:10px 20px;border-radius:10px;">Go to Dashboard</a>
+        </div>
+
+        <!-- Form -->
+        <div id="formBox">
+            <h2>&#128172; Share Your Opinion</h2>
+            <p class="subtitle">Your feedback goes directly to the manager.</p>
+
+            <div class="field-label">Rate Your Experience</div>
+            <div class="stars">
+                <input type="radio" name="rating" id="s5" value="5"><label for="s5">&#9733;</label>
+                <input type="radio" name="rating" id="s4" value="4"><label for="s4">&#9733;</label>
+                <input type="radio" name="rating" id="s3" value="3"><label for="s3">&#9733;</label>
+                <input type="radio" name="rating" id="s2" value="2"><label for="s2">&#9733;</label>
+                <input type="radio" name="rating" id="s1" value="1"><label for="s1">&#9733;</label>
+            </div>
+
+            <div class="field-label">Your Message</div>
+            <textarea id="feedbackText" placeholder="Write your thoughts, suggestions, or complaints..."></textarea>
+
+            <div id="errMsg" style="display:none; margin-top:12px; color:#ef4444; font-size:13px;"></div>
+
+            <button class="submit-btn" id="sendBtn" onclick="submitOpinion()">
+                &#128248; &nbsp;Send Opinion
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function submitOpinion() {
+    const ratingEl  = document.querySelector('input[name="rating"]:checked');
+    const feedback  = document.getElementById('feedbackText').value.trim();
+    const errMsg    = document.getElementById('errMsg');
+    const sendBtn   = document.getElementById('sendBtn');
+
+    errMsg.style.display = 'none';
+    if (!ratingEl && !feedback) {
+        errMsg.innerText = 'Please select a rating or write a message.';
+        errMsg.style.display = 'block';
+        return;
+    }
+
+    sendBtn.disabled  = true;
+    sendBtn.innerText = 'Sending...';
+
+    fetch('/api/poll', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            rating:   ratingEl ? parseInt(ratingEl.value) : null,
+            feedback: feedback
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('formBox').style.display    = 'none';
+            document.getElementById('successBox').style.display = 'block';
+        } else {
+            errMsg.innerText     = data.message || 'Something went wrong.';
+            errMsg.style.display = 'block';
+            sendBtn.disabled     = false;
+            sendBtn.innerText    = 'Send Opinion';
+        }
+    })
+    .catch(() => {
+        errMsg.innerText     = 'Network error. Please try again.';
+        errMsg.style.display = 'block';
+        sendBtn.disabled     = false;
+        sendBtn.innerText    = 'Send Opinion';
+    });
+}
+</script>
+
+{% endblock %}

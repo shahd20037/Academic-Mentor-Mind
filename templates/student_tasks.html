@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    background:
+    radial-gradient(circle at top left,#172554 0%,#0f172a 45%,#020617 100%);
+    min-height:100vh;
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    color:white;
+}
+
+/* BACKGROUND SHAPES */
+
+.bg-shape{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:-1;
+    opacity:.35;
+}
+
+.shape1{
+    width:300px;
+    height:300px;
+    background:#00d4ff;
+    top:-80px;
+    left:-80px;
+}
+
+.shape2{
+    width:250px;
+    height:250px;
+    background:#7c3aed;
+    bottom:0;
+    right:0;
+}
+
+.shape3{
+    width:200px;
+    height:200px;
+    background:#00ff88;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+/* MAIN */
+
+.container{
+    max-width:1300px;
+    margin:auto;
+    padding:50px 25px;
+}
+
+/* HEADER */
+
+.hero{
+    text-align:center;
+    margin-bottom:60px;
+}
+
+.hero h1{
+    font-family:'Orbitron',sans-serif;
+    font-size:55px;
+    font-weight:800;
+    margin-bottom:15px;
+
+    background:linear-gradient(90deg,#00d4ff,#00ff88,#7c3aed);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero p{
+    color:#94a3b8;
+    font-size:16px;
+    letter-spacing:1px;
+}
+
+/* SECTION */
+
+.section{
+    margin-bottom:60px;
+}
+
+.section-title{
+    font-size:28px;
+    margin-bottom:25px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:30px;
+}
+
+/* CARD */
+
+.card{
+    position:relative;
+    overflow:hidden;
+
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:28px;
+
+    padding:28px;
+
+    transition:0.45s ease;
+}
+
+/* glowing border */
+
+.card::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    padding:1px;
+    border-radius:28px;
+
+    background:linear-gradient(
+        135deg,
+        rgba(0,212,255,.9),
+        rgba(124,58,237,.7),
+        rgba(0,255,136,.7)
+    );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+
+    opacity:.5;
+}
+
+/* hover */
+
+.card:hover{
+    transform:translateY(-12px) scale(1.02);
+
+    box-shadow:
+    0 0 35px rgba(0,212,255,.25),
+    0 0 60px rgba(124,58,237,.2);
+}
+
+/* TOP TAG */
+
+.tag{
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:1px;
+
+    margin-bottom:18px;
+}
+
+.task-tag{
+    background:rgba(0,212,255,.15);
+    color:#00d4ff;
+}
+
+.quiz-tag{
+    background:rgba(124,58,237,.18);
+    color:#c084fc;
+}
+
+/* TITLE */
+
+.card h3{
+    font-size:25px;
+    margin-bottom:14px;
+    font-weight:800;
+}
+
+/* DESC */
+
+.desc{
+    color:#cbd5e1;
+    line-height:1.7;
+    margin-bottom:22px;
+}
+
+/* FOOTER */
+
+.footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:20px;
+}
+
+/* DATE */
+
+.date{
+    font-size:13px;
+    color:#94a3b8;
+}
+
+/* BUTTON */
+
+.btn{
+    text-decoration:none;
+
+    padding:12px 22px;
+
+    border-radius:16px;
+
+    font-size:14px;
+    font-weight:700;
+
+    color:white;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d4ff,
+        #7c3aed
+    );
+
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:scale(1.07);
+}
+
+/* EMPTY */
+
+.empty{
+    padding:60px;
+    text-align:center;
+
+    border-radius:25px;
+
+    background:rgba(255,255,255,0.04);
+
+    border:1px dashed rgba(255,255,255,0.15);
+
+    color:#94a3b8;
+}
+
+.empty h2{
+    color:white;
+    margin-bottom:12px;
+}
+
+/* DECORATIVE LINES */
+
+.lines{
+    position:absolute;
+    inset:0;
+    background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+
+    background-size:35px 35px;
+
+    z-index:-1;
+}
+
+</style>
+
+<div class="bg-shape shape1"></div>
+<div class="bg-shape shape2"></div>
+<div class="bg-shape shape3"></div>
+
+<div class="lines"></div>
+
+<div class="container">
+
+    <!-- HERO -->
+
+    <div class="hero">
+        <h1>Study Dashboard</h1>
+        <p>
+            Smart academic workspace for tasks, quizzes and learning progress
+        </p>
+    </div>
+
+    <!-- TASKS -->
+
+    <div class="section">
+
+        <div class="section-title">
+            📝 Tasks
+        </div>
+
+        {% if tasks %}
+
+        <div class="grid">
+
+            {% for t in tasks %}
+
+            <div class="card">
+
+                <div class="tag task-tag">
+                    TASK
+                </div>
+
+                <h3>{{ t.title }}</h3>
+
+                <div class="desc">
+                    {{ t.description }}
+                </div>
+
+                <div class="footer">
+
+                    <div class="date">
+                        ⏳ Due:
+                        {{ t.due_date }}
+                    </div>
+
+                    <a href="#" class="btn">
+                        Open
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            <h2>No Tasks Yet 🚀</h2>
+            <p>Your professors haven't uploaded tasks yet.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- QUIZZES -->
+
+    <div class="section">
+
+        <div class="section-title">
+            🧪 Quizzes
+        </div>
+
+        {% if quizzes %}
+
+        <div class="grid">
+
+            {% for q in quizzes %}
+
+            <div class="card">
+
+                <div class="tag quiz-tag">
+                    QUIZ
+                </div>
+
+                <h3>{{ q.title }}</h3>
+
+                <div class="desc">
+                    Quiz Duration:
+                    {{ q.time }}
+                </div>
+
+                <div class="footer">
+
+                    <div class="date">
+                        ⚡ Ready To Start
+                    </div>
+
+                    <a href="#" class="btn">
+                        Start Quiz
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            <h2>No Quizzes Available 🎯</h2>
+            <p>Check again later for upcoming quizzes.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

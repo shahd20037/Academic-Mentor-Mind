@@ -1,0 +1,720 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+
+:root{
+    --bg:#07111f;
+    --bg2:#0d1b2e;
+    --card:rgba(255,255,255,0.04);
+    --border:rgba(255,255,255,0.08);
+
+    --primary:#00d4ff;
+    --secondary:#00ffb3;
+
+    --text:#ffffff;
+    --muted:#9fb3c8;
+
+    --shadow:
+    0 0 35px rgba(0,212,255,0.12);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter','Cairo',sans-serif;
+
+    background:
+    radial-gradient(circle at top left,#132238 0%,#07111f 50%),
+    linear-gradient(135deg,#07111f,#0d1b2e);
+
+    color:var(--text);
+
+    min-height:100vh;
+
+    overflow-x:hidden;
+}
+
+/* BACKGROUND GRID */
+
+body::before{
+    content:"";
+
+    position:fixed;
+    inset:0;
+
+    background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+
+    background-size:40px 40px;
+
+    z-index:-2;
+}
+
+/* GLOW ORBS */
+
+.glow{
+    position:fixed;
+
+    width:400px;
+    height:400px;
+
+    border-radius:50%;
+
+    filter:blur(100px);
+
+    z-index:-1;
+
+    opacity:0.25;
+}
+
+.glow1{
+    top:-100px;
+    left:-100px;
+
+    background:#00d4ff;
+}
+
+.glow2{
+    bottom:-120px;
+    right:-120px;
+
+    background:#00ffb3;
+}
+
+/* MAIN CONTAINER */
+
+.ai-container{
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:50px 25px;
+}
+
+/* HEADER */
+
+.ai-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:40px;
+}
+
+.title-box h2{
+    font-size:48px;
+    font-weight:900;
+
+    letter-spacing:-2px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.title-box h2 i{
+    color:var(--primary);
+
+    text-shadow:
+    0 0 20px rgba(0,212,255,0.6);
+}
+
+.title-box p{
+    margin-top:10px;
+
+    color:var(--muted);
+
+    font-size:17px;
+
+    max-width:650px;
+
+    line-height:1.7;
+}
+
+/* BACK BUTTON */
+
+.btn-back-global{
+    text-decoration:none;
+
+    color:white;
+
+    padding:14px 22px;
+
+    border-radius:16px;
+
+    border:1px solid rgba(255,255,255,0.1);
+
+    background:rgba(255,255,255,0.04);
+
+    backdrop-filter:blur(10px);
+
+    transition:0.3s;
+}
+
+.btn-back-global:hover{
+    transform:translateY(-3px);
+
+    border-color:var(--primary);
+
+    box-shadow:var(--shadow);
+}
+
+/* MAIN PANEL */
+
+.glass-panel{
+    position:relative;
+
+    overflow:hidden;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:35px;
+
+    padding:45px;
+
+    backdrop-filter:blur(20px);
+
+    box-shadow:
+    0 15px 50px rgba(0,0,0,0.4);
+}
+
+/* PANEL DECORATION */
+
+.glass-panel::before{
+    content:"";
+
+    position:absolute;
+
+    width:350px;
+    height:350px;
+
+    background:rgba(0,212,255,0.08);
+
+    border-radius:50%;
+
+    top:-180px;
+    right:-150px;
+}
+
+.glass-panel::after{
+    content:"";
+
+    position:absolute;
+
+    width:250px;
+    height:250px;
+
+    background:rgba(0,255,179,0.05);
+
+    border-radius:50%;
+
+    bottom:-120px;
+    left:-100px;
+}
+
+/* FORM GRID */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+}
+
+.full-width{
+    grid-column:1 / -1;
+}
+
+/* FORM GROUP */
+
+.form-group{
+    position:relative;
+}
+
+.form-label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin-bottom:14px;
+
+    font-size:15px;
+    font-weight:700;
+
+    color:#fff;
+}
+
+.form-label i{
+    color:var(--primary);
+}
+
+/* INPUTS */
+
+select,
+textarea,
+input[type="file"]{
+
+    width:100%;
+
+    border:none;
+    outline:none;
+
+    border-radius:20px;
+
+    background:rgba(255,255,255,0.04);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    color:white;
+
+    padding:18px;
+
+    font-size:16px;
+
+    transition:0.3s;
+}
+
+select:focus,
+textarea:focus{
+    border-color:var(--primary);
+
+    box-shadow:
+    0 0 20px rgba(0,212,255,0.15);
+}
+
+select option{
+    background:#0b1525;
+}
+
+textarea{
+    min-height:180px;
+
+    resize:none;
+
+    line-height:1.8;
+}
+
+/* FILE BOX */
+
+.file-box{
+    border:2px dashed rgba(255,255,255,0.1);
+
+    border-radius:25px;
+
+    padding:35px;
+
+    text-align:center;
+
+    transition:0.3s;
+
+    background:rgba(255,255,255,0.02);
+}
+
+.file-box:hover{
+    border-color:var(--primary);
+
+    background:rgba(255,255,255,0.04);
+
+    box-shadow:var(--shadow);
+}
+
+.file-box i{
+    font-size:40px;
+
+    margin-bottom:15px;
+
+    color:var(--primary);
+}
+
+.file-box p{
+    color:var(--muted);
+
+    margin-bottom:15px;
+}
+
+/* BUTTON */
+
+.btn-submit{
+    width:100%;
+
+    margin-top:15px;
+
+    border:none;
+    outline:none;
+
+    padding:20px;
+
+    border-radius:22px;
+
+    background:
+    linear-gradient(135deg,#00d4ff,#00ffb3);
+
+    color:#04111d;
+
+    font-size:18px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+
+    transition:0.35s;
+
+    box-shadow:
+    0 10px 30px rgba(0,212,255,0.25);
+}
+
+.btn-submit:hover{
+    transform:translateY(-4px) scale(1.01);
+
+    box-shadow:
+    0 15px 35px rgba(0,212,255,0.35);
+}
+
+/* RESPONSE */
+
+.response-card{
+
+    margin-top:40px;
+
+    background:white;
+
+    color:#0f172a;
+
+    border-radius:35px;
+
+    padding:40px;
+
+    animation:showUp 0.5s ease;
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,0.4);
+}
+
+@keyframes showUp{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.response-header{
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    margin-bottom:25px;
+
+    padding-bottom:20px;
+
+    border-bottom:2px solid #e2e8f0;
+}
+
+.response-header i{
+    font-size:28px;
+
+    color:#00b4d8;
+}
+
+.response-header h3{
+    font-size:26px;
+    font-weight:800;
+}
+
+.response-content{
+    line-height:2;
+
+    font-size:17px;
+
+    color:#334155;
+
+    white-space:pre-wrap;
+}
+
+/* SMALL INFO BOXES */
+
+.info-cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+
+    margin-bottom:35px;
+}
+
+.info-box{
+    background:rgba(255,255,255,0.03);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:25px;
+
+    padding:25px;
+
+    transition:0.3s;
+}
+
+.info-box:hover{
+    transform:translateY(-6px);
+
+    border-color:var(--primary);
+
+    box-shadow:var(--shadow);
+}
+
+.info-box i{
+    font-size:24px;
+
+    margin-bottom:15px;
+
+    color:var(--primary);
+}
+
+.info-box h4{
+    margin-bottom:8px;
+}
+
+.info-box p{
+    color:var(--muted);
+
+    font-size:14px;
+
+    line-height:1.7;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .info-cards{
+        grid-template-columns:1fr;
+    }
+
+    .ai-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:20px;
+    }
+
+    .title-box h2{
+        font-size:35px;
+    }
+
+    .glass-panel{
+        padding:30px;
+    }
+}
+
+</style>
+
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+
+<div class="ai-container">
+
+    <!-- HEADER -->
+
+    <div class="ai-header">
+
+        <div class="title-box">
+
+            <h2>
+                <i class="fas fa-microchip"></i>
+                AI Academic Assistant
+            </h2>
+
+            <p>
+                Smart educational system designed to help students analyze,
+                understand, and solve academic problems with advanced AI support.
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('student_dashboard') }}"
+           class="btn-back-global">
+
+           ← Back
+
+        </a>
+
+    </div>
+
+    <!-- SMALL BOXES -->
+
+    <div class="info-cards">
+
+        <div class="info-box">
+            <i class="fas fa-brain"></i>
+            <h4>AI Analysis</h4>
+            <p>
+                Intelligent explanations for complex engineering and CS topics.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <i class="fas fa-book-open"></i>
+            <h4>Study Support</h4>
+            <p>
+                Upload study materials and receive academic guidance instantly.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <i class="fas fa-chart-line"></i>
+            <h4>Academic Growth</h4>
+            <p>
+                Improve understanding and learning performance interactively.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- FORM PANEL -->
+
+    <div class="glass-panel">
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="form-grid">
+
+                <!-- BOOK -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        <i class="fas fa-book"></i>
+                        Select Subject
+                    </label>
+
+                    <select name="book" required>
+
+                        <option value="" disabled selected>
+                            -- Choose Subject --
+                        </option>
+
+                        <option value="machine">
+                            Machine Learning
+                        </option>
+
+                        <option value="CG">
+                            Computer Graphics
+                        </option>
+
+                        <option value="pattern">
+                            Pattern Recognition
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- FILE -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        <i class="fas fa-paperclip"></i>
+                        Upload Study Material
+                    </label>
+
+                    <div class="file-box">
+
+                        <i class="fas fa-cloud-upload-alt"></i>
+
+                        <p>
+                            Upload PDF, image, or lecture notes
+                        </p>
+
+                        <input type="file" name="study_material">
+
+                    </div>
+
+                </div>
+
+                <!-- QUESTION -->
+
+                <div class="form-group full-width">
+
+                    <label class="form-label">
+                        <i class="fas fa-pen"></i>
+                        Academic Question
+                    </label>
+
+                    <textarea
+                    name="query"
+                    placeholder="Ask your academic question in detail..."
+                    required></textarea>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <div class="form-group full-width">
+
+                    <button type="submit" class="btn-submit">
+
+                        <span>Generate AI Answer</span>
+
+                        <i class="fas fa-sparkles"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- RESPONSE -->
+
+    {% if response %}
+
+    <div class="response-card">
+
+        <div class="response-header">
+
+            <i class="fas fa-lightbulb"></i>
+
+            <h3>AI Academic Response</h3>
+
+        </div>
+
+        <div class="response-content">
+
+            {{ response }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

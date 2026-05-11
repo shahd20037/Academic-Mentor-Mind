@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --bg1:#071120;
+    --bg2:#0f172a;
+    --primary:#00d4ff;
+    --purple:#8b5cf6;
+    --green:#22c55e;
+    --yellow:#facc15;
+    --red:#ef4444;
+    --glass:rgba(255,255,255,0.06);
+    --border:rgba(255,255,255,0.1);
+}
+
+body{
+    background:
+    radial-gradient(circle at top left, rgba(0,212,255,0.15), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139,92,246,0.18), transparent 30%),
+    linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    font-family:'Inter',sans-serif;
+    color:white;
+    overflow-x:hidden;
+}
+
+/* FLOATING SHAPES */
+
+.bg-shape{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.25;
+    z-index:-1;
+}
+
+.shape1{
+    width:300px;
+    height:300px;
+    background:#00d4ff;
+    top:-80px;
+    left:-100px;
+}
+
+.shape2{
+    width:250px;
+    height:250px;
+    background:#8b5cf6;
+    bottom:-80px;
+    right:-60px;
+}
+
+/* CONTAINER */
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:50px 20px;
+}
+
+/* HEADER */
+
+.header{
+    text-align:center;
+    margin-bottom:60px;
+}
+
+.header h1{
+    font-size:48px;
+    font-family:'Orbitron',sans-serif;
+    margin-bottom:10px;
+    background:linear-gradient(90deg,#00d4ff,#8b5cf6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    letter-spacing:2px;
+}
+
+.header p{
+    color:#94a3b8;
+    font-size:17px;
+}
+
+/* GRID */
+
+.plan-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+}
+
+/* CARD */
+
+.plan-card{
+    position:relative;
+    padding:28px;
+    border-radius:30px;
+    background:var(--glass);
+    border:1px solid var(--border);
+    backdrop-filter:blur(16px);
+    overflow:hidden;
+    transition:0.35s ease;
+}
+
+.plan-card:hover{
+    transform:translateY(-10px) scale(1.02);
+    border-color:rgba(0,212,255,0.4);
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* TOP GLOW */
+
+.plan-card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:4px;
+    background:linear-gradient(90deg,#00d4ff,#8b5cf6);
+}
+
+/* HEXAGON */
+
+.hexagon{
+    width:120px;
+    height:130px;
+    margin:auto;
+    position:relative;
+    clip-path:polygon(
+        25% 6%,
+        75% 6%,
+        100% 50%,
+        75% 94%,
+        25% 94%,
+        0% 50%
+    );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    font-weight:800;
+    font-family:'Orbitron',sans-serif;
+    color:white;
+}
+
+/* PRIORITY COLORS */
+
+.high{
+    background:linear-gradient(135deg,#ef4444,#7f1d1d);
+    box-shadow:0 0 30px rgba(239,68,68,0.4);
+}
+
+.medium{
+    background:linear-gradient(135deg,#facc15,#ca8a04);
+    box-shadow:0 0 30px rgba(250,204,21,0.4);
+}
+
+.low{
+    background:linear-gradient(135deg,#22c55e,#166534);
+    box-shadow:0 0 30px rgba(34,197,94,0.4);
+}
+
+/* CONTENT */
+
+.title{
+    text-align:center;
+    margin-top:25px;
+    font-size:20px;
+    font-weight:700;
+}
+
+.subject{
+    text-align:center;
+    margin-top:8px;
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.action{
+    margin-top:18px;
+    background:rgba(255,255,255,0.05);
+    padding:14px;
+    border-radius:15px;
+    color:#e2e8f0;
+    line-height:1.6;
+    font-size:14px;
+}
+
+/* PRIORITY BADGE */
+
+.badge{
+    position:absolute;
+    top:18px;
+    right:18px;
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:12px;
+    font-weight:700;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);
+}
+
+/* EMPTY */
+
+.empty{
+    grid-column:1/-1;
+    text-align:center;
+    padding:80px 20px;
+    background:rgba(255,255,255,0.04);
+    border-radius:30px;
+    border:1px dashed rgba(255,255,255,0.15);
+}
+
+.empty h3{
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.empty p{
+    color:#94a3b8;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .header h1{
+        font-size:34px;
+    }
+
+    .plan-card{
+        padding:22px;
+    }
+
+}
+
+</style>
+
+<div class="bg-shape shape1"></div>
+<div class="bg-shape shape2"></div>
+
+<div class="container">
+
+    <div class="header">
+        <h1>AI STUDY PLAN</h1>
+        <p>Your intelligent academic roadmap powered by AI analytics</p>
+    </div>
+
+    <div id="plan" class="plan-grid"></div>
+
+</div>
+
+<script>
+
+fetch("/api/study_plan")
+.then(res => res.json())
+.then(data => {
+
+    const container = document.getElementById("plan");
+
+    if (!data.plan || data.plan.length === 0){
+
+        container.innerHTML = `
+        <div class="empty">
+            <h3>No Study Plan Yet 🚀</h3>
+            <p>Your AI assistant will generate personalized tasks soon.</p>
+        </div>
+        `;
+
+        return;
+    }
+
+    data.plan.forEach(item => {
+
+        let cls = "medium";
+        let percent = 60;
+
+        if(item.priority === "High"){
+            cls = "high";
+            percent = 85;
+        }
+        else if(item.priority === "Low"){
+            cls = "low";
+            percent = 30;
+        }
+
+        container.innerHTML += `
+
+        <div class="plan-card">
+
+            <div class="badge">${item.priority}</div>
+
+            <div class="hexagon ${cls}">
+                ${percent}%
+            </div>
+
+            <div class="title">${item.title}</div>
+
+            <div class="subject">
+                ${item.subject}
+            </div>
+
+            <div class="action">
+                ${item.action}
+            </div>
+
+        </div>
+
+        `;
+    });
+
+});
+
+</script>
+
+{% endblock %}

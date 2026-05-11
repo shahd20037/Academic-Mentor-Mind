@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --bg: #0a0f1e;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.09);
+    --accent: #7c3aed;
+    --accent2: #00d4ff;
+    --text: #d7dde6;
+    --muted: #475569;
+    --danger: #e63946;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: radial-gradient(ellipse at 20% 0%, #1a0a2e 0%, #0a0f1e 60%);
+    font-family: 'Inter', sans-serif; color: #fff; min-height: 100vh;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+
+/* ── HEADER ── */
+.top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 26px;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 20px; margin-bottom: 26px; backdrop-filter: blur(14px);
+}
+.top-bar h1 { font-size: 21px; font-weight: 800; }
+.top-bar h1 span { color: var(--accent2); }
+.top-bar p { color: var(--text); font-size: 13px; margin-top: 3px; }
+.btn-back {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--text); font-size: 13px; font-weight: 600;
+    text-decoration: none; transition: 0.2s;
+}
+.btn-back:hover { background: rgba(255,255,255,0.08); }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 280px 1fr; gap: 22px; }
+
+/* ── DOCTOR LIST ── */
+.sidebar {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 20px; backdrop-filter: blur(12px);
+    position: sticky; top: 20px; max-height: 80vh; overflow-y: auto;
+}
+.sidebar-title {
+    font-size: 12px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--muted); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+}
+.sidebar-title i { color: var(--accent); }
+
+.doc-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 14px; border-radius: 12px;
+    border: 1px solid transparent; cursor: pointer;
+    text-decoration: none; color: var(--text);
+    transition: 0.2s; margin-bottom: 6px;
+}
+.doc-item:hover { background: rgba(255,255,255,0.05); border-color: var(--border); }
+.doc-item.active {
+    background: rgba(124,58,237,0.18); border-color: rgba(124,58,237,0.35);
+    color: #a78bfa;
+}
+.doc-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; flex-shrink: 0;
+}
+.doc-name { font-size: 14px; font-weight: 600; }
+.doc-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── CHAT AREA ── */
+.chat-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; overflow: hidden; display: flex;
+    flex-direction: column; backdrop-filter: blur(12px);
+    min-height: 520px;
+}
+.chat-header {
+    padding: 18px 22px; border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    display: flex; align-items: center; gap: 12px;
+}
+.chat-header .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #00d4ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800;
+}
+.chat-header .info h3 { font-size: 15px; font-weight: 700; }
+.chat-header .info p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.online-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #00ff88; margin-left: auto;
+    box-shadow: 0 0 6px #00ff88;
+}
+
+/* ── MESSAGES ── */
+.messages-scroll {
+    flex: 1; overflow-y: auto; padding: 22px;
+    display: flex; flex-direction: column; gap: 14px;
+}
+.messages-scroll::-webkit-scrollbar { width: 4px; }
+.messages-scroll::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.35); border-radius: 4px; }
+
+.bubble-wrap { display: flex; align-items: flex-end; gap: 9px; }
+.bubble-wrap.mine  { flex-direction: row-reverse; }
+.bubble-wrap.theirs { flex-direction: row; }
+
+.bubble-avatar {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+}
+.bubble-wrap.mine   .bubble-avatar { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
+.bubble-wrap.theirs .bubble-avatar { background: linear-gradient(135deg, #0ea5e9, #00d4ff); }
+
+.bubble {
+    max-width: 68%; padding: 11px 16px; border-radius: 18px;
+    font-size: 14px; line-height: 1.65; word-break: break-word;
+}
+.bubble-wrap.mine   .bubble {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: #fff; border-bottom-right-radius: 4px;
+}
+.bubble-wrap.theirs .bubble {
+    background: rgba(255,255,255,0.07); color: var(--text);
+    border: 1px solid var(--border); border-bottom-left-radius: 4px;
+}
+.bubble-time {
+    font-size: 10px; color: var(--muted);
+    margin-top: 4px; text-align: right;
+}
+.bubble-wrap.theirs .bubble-time { text-align: left; }
+
+.delete-btn {
+    background: none; border: none; cursor: pointer;
+    color: rgba(230,57,70,0.5); font-size: 11px;
+    padding: 2px 5px; border-radius: 5px; transition: 0.2s;
+    align-self: center;
+}
+.delete-btn:hover { color: var(--danger); background: rgba(230,57,70,0.1); }
+
+/* ── EMPTY STATE ── */
+.empty-chat {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--muted); text-align: center; padding: 40px;
+}
+.empty-chat .icon { font-size: 54px; opacity: 0.2; margin-bottom: 18px; }
+.empty-chat h3 { font-size: 17px; font-weight: 700; color: #64748b; margin-bottom: 6px; }
+.empty-chat p  { font-size: 13px; }
+
+/* ── COMPOSE ── */
+.compose {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: flex-end;
+    background: rgba(0,0,0,0.18);
+}
+.compose textarea {
+    flex: 1; resize: none; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border); border-radius: 14px;
+    color: #fff; font-family: inherit; font-size: 14px;
+    padding: 12px 16px; outline: none; max-height: 130px;
+    line-height: 1.6; transition: 0.2s;
+}
+.compose textarea:focus { border-color: rgba(124,58,237,0.55); background: rgba(124,58,237,0.06); }
+.compose textarea::placeholder { color: var(--muted); }
+.btn-send {
+    width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    border: none; color: #fff; font-size: 16px;
+    cursor: pointer; transition: 0.2s; display: flex;
+    align-items: center; justify-content: center;
+}
+.btn-send:hover { opacity: 0.85; transform: scale(1.05); }
+
+/* ── NO DOCTOR SELECTED ── */
+.no-selection {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--muted); text-align: center; padding: 50px;
+}
+.no-selection .icon { font-size: 60px; opacity: 0.15; margin-bottom: 20px; }
+.no-selection h3 { font-size: 18px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+
+@media(max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; max-height: 220px; }
+}
+</style>
+
+<div class="wrap">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div>
+            <h1><i class="fas fa-comments" style="color:#7c3aed;margin-right:10px;"></i>Chat with <span>Doctor</span></h1>
+            <p>Select a doctor from the list and start a conversation</p>
+        </div>
+        <a href="{{ url_for('student_dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="layout">
+
+        <!-- ══ SIDEBAR: Doctor List ══ -->
+        <div class="sidebar">
+            <div class="sidebar-title"><i class="fas fa-user-md"></i> Available Doctors</div>
+            {% for doc in doctors %}
+            <a href="{{ url_for('doctor_chat', doctor=doc.username) }}"
+               class="doc-item {% if selected_doctor == doc.username %}active{% endif %}">
+                <div class="doc-avatar">{{ doc.username[0].upper() }}</div>
+                <div>
+                    <div class="doc-name">Dr. {{ doc.username }}</div>
+                    <div class="doc-sub">Click to open chat</div>
+                </div>
+            </a>
+            {% else %}
+            <p style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">No doctors available</p>
+            {% endfor %}
+        </div>
+
+        <!-- ══ CHAT BOX ══ -->
+        <div class="chat-box">
+            {% if selected_doctor %}
+
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="avatar">{{ selected_doctor[0].upper() }}</div>
+                <div class="info">
+                    <h3>Dr. {{ selected_doctor }}</h3>
+                    <p>Doctor</p>
+                </div>
+                <div class="online-dot" title="Online"></div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages-scroll" id="msgScroll">
+                {% if messages %}
+                    {% for msg in messages %}
+                    <div class="bubble-wrap {% if msg.sender == student_code %}mine{% else %}theirs{% endif %}">
+                        <div class="bubble-avatar">
+                            {% if msg.sender == student_code %}
+                                <i class="fas fa-user"></i>
+                            {% else %}
+                                <i class="fas fa-user-md"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="bubble">{{ msg.message }}</div>
+                            <div class="bubble-time">
+                                {{ msg.created_at.strftime('%d %b, %H:%M') if msg.created_at else '' }}
+                            </div>
+                        </div>
+                        {% if msg.sender == student_code %}
+                        <form method="POST" action="{{ url_for('delete_chat', msg_id=msg.id) }}"
+                              onsubmit="return confirm('Delete this message?');">
+                            <button type="submit" class="delete-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-chat">
+                        <div class="icon"><i class="fas fa-comment-dots"></i></div>
+                        <h3>No messages yet</h3>
+                        <p>Send your first message to Dr. {{ selected_doctor }}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Compose -->
+            <form method="POST" class="compose" id="chatForm">
+                <input type="hidden" name="doctor_username" value="{{ selected_doctor }}">
+                <textarea name="message" id="msgInput" rows="1"
+                          placeholder="Type your message…"
+                          required
+                          onkeydown="handleKey(event)"></textarea>
+                <button type="submit" class="btn-send" title="Send">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+
+            {% else %}
+            <!-- No doctor selected yet -->
+            <div class="no-selection">
+                <div class="icon"><i class="fas fa-hand-pointer"></i></div>
+                <h3>Select a Doctor</h3>
+                <p>Choose a doctor from the left panel to start chatting</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Auto-scroll to bottom on load
+const scroll = document.getElementById('msgScroll');
+if (scroll) scroll.scrollTop = scroll.scrollHeight;
+
+// Auto-grow textarea
+const ta = document.getElementById('msgInput');
+if (ta) {
+    ta.addEventListener('input', () => {
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 130) + 'px';
+    });
+}
+
+// Send on Enter (Shift+Enter = new line)
+function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const form = document.getElementById('chatForm');
+        if (form && ta.value.trim()) form.submit();
+    }
+}
+</script>
+
+{% endblock %}

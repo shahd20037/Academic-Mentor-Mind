@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --bg-dark: #050a15;
+        --card-bg: rgba(13, 25, 48, 0.7);
+        --accent-gradient: linear-gradient(90deg, #4f46e5, #9333ea);
+        --text-main: #ffffff;
+        --text-dim: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #1e293b 0%, #050a15 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--text-main);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Override base.html container */
+    .container {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+        padding: 100px 20px 40px !important;
+    }
+
+    .hero-section {
+        margin-bottom: 60px;
+    }
+
+    .hero-title {
+        font-size: 64px;
+        font-weight: 800;
+        margin-bottom: 24px;
+        letter-spacing: -1px;
+    }
+
+    .top-nav-buttons {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+
+    .pill-btn {
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        background: var(--glass-bg);
+        color: var(--text-main);
+    }
+
+    .pill-btn.active {
+        background: var(--accent-gradient);
+        border: none;
+    }
+
+    .pill-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #4f46e5;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .section-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 32px;
+        max-width: 500px;
+        line-height: 1.2;
+    }
+
+    /* Workspaces Grid */
+    .workspaces-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 80px;
+    }
+
+    .workspace-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .workspace-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(79, 70, 229, 0.4);
+    }
+
+    .card-icon-badge {
+        width: 40px;
+        height: 40px;
+        background: rgba(79, 70, 229, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #818cf8;
+        margin-bottom: 24px;
+        font-size: 14px;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .card-desc {
+        font-size: 14px;
+        color: var(--text-dim);
+        line-height: 1.6;
+        margin-bottom: 32px;
+        flex-grow: 1;
+    }
+
+    .card-action-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--accent-gradient);
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: opacity 0.3s ease;
+    }
+
+    .card-action-btn:hover {
+        opacity: 0.9;
+    }
+
+    /* Features Grid */
+    .features-container {
+        margin-top: 40px;
+    }
+
+    .features-sub-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        display: block;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 48px;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .feature-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(56, 189, 248, 0.2);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: #38bdf8;
+        margin-bottom: 16px;
+    }
+
+    .feature-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .feature-desc {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.5;
+        margin-bottom: 16px;
+    }
+
+    .feature-link {
+        color: #4f46e5;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .feature-link:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 1024px) {
+        .workspaces-grid, .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .workspaces-grid, .features-grid {
+            grid-template-columns: 1fr;
+        }
+        .hero-title {
+            font-size: 48px;
+        }
+    }
+</style>
+
+<div class="hero-section">
+    <h1 class="hero-title">Academic Mentor Mind</h1>
+    
+    <div class="top-nav-buttons">
+        <a href="{{ url_for('signup_student') }}" class="pill-btn active">Start as Student</a>
+        <a href="{{ url_for('login') }}" class="pill-btn">Doctor Portal</a>
+        <a href="{{ url_for('login') }}" class="pill-btn">Manager View</a>
+    </div>
+
+    <span class="section-label">WORKSPACES</span>
+    <h2 class="section-title">Choose the workspace that matches each university role.</h2>
+
+    <div class="workspaces-grid">
+        <!-- Student Workspace -->
+        <div class="workspace-card">
+            <div class="card-icon-badge">ST</div>
+            <h3 class="card-title">Student Workspace</h3>
+            <p class="card-desc">Advice, study plans, AI chat, attendance, books, progress, and doctor messages.</p>
+            <a href="{{ url_for('student_dashboard') }}" class="card-action-btn">Open Student</a>
+        </div>
+
+        <!-- Doctor Workspace -->
+        <div class="workspace-card">
+            <div class="card-icon-badge" style="color: #a855f7; background: rgba(168, 85, 247, 0.2);">DR</div>
+            <h3 class="card-title">Doctor Workspace</h3>
+            <p class="card-desc">Exam cameras, AI chat logs, grade uploads, level groups, and student support.</p>
+            <a href="{{ url_for('doctor_dashboard') }}" class="card-action-btn">Open Doctor</a>
+        </div>
+
+        <!-- Manager Workspace -->
+        <div class="workspace-card">
+            <div class="card-icon-badge" style="color: #ec4899; background: rgba(236, 72, 153, 0.2);">MG</div>
+            <h3 class="card-title">Manager Workspace</h3>
+            <p class="card-desc">Departments, risk reports, platform activity, course analytics, and performance.</p>
+            <a href="{{ url_for('manager_dashboard') }}" class="card-action-btn">Open Manager</a>
+        </div>
+    </div>
+
+    <div class="features-container">
+        <span class="section-label">CORE FEATURES</span>
+        <h2 class="section-title">Smart academic tools grouped by purpose.</h2>
+
+        <span class="features-sub-label">STUDENT TOOLS</span>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">AI</div>
+                <h4 class="feature-title">AI Advice</h4>
+                <p class="feature-desc">Analyzes GPA, attendance, and study hours to generate personalized guidance.</p>
+                <a href="{{ url_for('student_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">QR</div>
+                <h4 class="feature-title">QR Attendance</h4>
+                <p class="feature-desc">Students scan a QR code to mark lectures quickly and accurately.</p>
+                <a href="{{ url_for('student_qrcode') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">CAM</div>
+                <h4 class="feature-title">Exam Monitoring</h4>
+                <p class="feature-desc">Camera monitoring gives instructors a safer online exam experience.</p>
+                <a href="{{ url_for('student_exam_proctoring') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">SRV</div>
+                <h4 class="feature-title">Smart Surveys</h4>
+                <p class="feature-desc">Collects feedback and turns responses into readable insights.</p>
+                <a href="{{ url_for('student_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">LIB</div>
+                <h4 class="feature-title">Study Resources</h4>
+                <p class="feature-desc">Recommends useful materials based on subjects and weak points.</p>
+                <a href="{{ url_for('student_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+        </div>
+
+        <span class="features-sub-label">DOCTOR AND MANAGEMENT TOOLS</span>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon" style="color: #fbbf24; background: rgba(251, 191, 36, 0.2);">UP</div>
+                <h4 class="feature-title">Project Sharing</h4>
+                <p class="feature-desc">Students upload files and videos so classmates can discover their work.</p>
+                <a href="{{ url_for('projects_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="color: #f87171; background: rgba(248, 113, 113, 0.2);">CAM</div>
+                <h4 class="feature-title">Live Exam Proctoring</h4>
+                <p class="feature-desc">Doctors can monitor student cameras and search for a specific student.</p>
+                <a href="{{ url_for('doctor_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="color: #60a5fa; background: rgba(96, 165, 250, 0.2);">LVL</div>
+                <h4 class="feature-title">Level Grouping</h4>
+                <p class="feature-desc">Grades are analyzed into close performance groups to support weak students.</p>
+                <a href="{{ url_for('doctor_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="color: #34d399; background: rgba(52, 211, 153, 0.2);">MGR</div>
+                <h4 class="feature-title">Manager Dashboard</h4>
+                <p class="feature-desc">Management can review platform usage, courses, risk levels, and activity.</p>
+                <a href="{{ url_for('manager_dashboard') }}" class="feature-link">Open section</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

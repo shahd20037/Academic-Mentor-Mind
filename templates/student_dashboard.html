@@ -1,0 +1,846 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root {
+  --navy-dark: #0f1419;
+  --navy-light: #1a2332;
+  --primary: #00d4ff;
+  --primary-light: #00e5ff;
+  --accent: #00ff88;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a9b8;
+  --border-color: rgba(0, 212, 255, 0.2);
+  --bg-glass: rgba(26, 35, 50, 0.6);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* Override base.html container */
+.container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  min-height: 100vh;
+  margin-top: 0;
+}
+
+/* ======================== SIDEBAR ======================== */
+.dashboard-wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  margin-top: 60px;
+}
+
+.sidebar {
+  width: 280px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--border-color);
+  padding: 20px 0;
+  position: fixed;
+  left: 0;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.sidebar-logo-text {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.sidebar-section {
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+}
+
+.sidebar-section-title {
+  padding: 0 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.sidebar-item {
+  padding: 12px 20px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  font-size: 14px;
+}
+
+.sidebar-item:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--primary-light);
+  border-left-color: var(--primary);
+}
+
+.sidebar-item.active {
+  background: rgba(0, 212, 255, 0.15);
+  color: var(--primary-light);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar-icon {
+  font-size: 16px;
+  min-width: 18px;
+}
+
+/* ======================== MAIN CONTENT ======================== */
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+}
+
+.header-section {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 30px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.header-greeting h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-greeting p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.header-action {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-view-projects {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: var(--navy-dark);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-view-projects:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+}
+
+/* ======================== CONTENT AREA ======================== */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 40px;
+}
+
+.content-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+/* ======================== STATS GRID ======================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 25px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.stat-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.stat-change {
+  font-size: 12px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-change.negative {
+  color: #ff4444;
+}
+
+/* ======================== TODAY PLAN ======================== */
+.today-plan {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.today-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.today-plan-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.today-plan-title::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+  border-radius: 2px;
+}
+
+.today-plan-status {
+  font-size: 12px;
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.plan-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+  transition: all 0.3s ease;
+}
+
+.plan-item:hover {
+  background: rgba(0, 212, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.plan-item-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.plan-item-checkbox:hover {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.plan-item-checkbox.checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.plan-item-checkbox.checked::after {
+  content: '✓';
+  color: var(--navy-dark);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.plan-item-text {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.plan-item-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: rgba(0, 212, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* ======================== EMPTY STATE ======================== */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.empty-state-text {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  .main-content {
+    margin-left: 240px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    top: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    max-height: 200px;
+    overflow-x: auto;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .sidebar-section {
+    display: flex;
+    gap: 10px;
+    border: none;
+    padding: 0;
+  }
+
+  .sidebar-section-title {
+    display: none;
+  }
+
+  .sidebar-item {
+    white-space: nowrap;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    border-left: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-section {
+    padding: 20px;
+  }
+
+  .content-area {
+    padding: 20px;
+  }
+}
+
+/* ======================== BACK BUTTON OVERRIDE ======================== */
+.navbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 24px !important;
+}
+
+.nav-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.nav-links {
+  display: flex !important;
+  gap: 15px !important;
+}
+
+.btn-back {
+  padding: 8px 16px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-back:hover {
+  background: rgba(0, 212, 255, 0.2);
+  transform: translateX(-3px);
+}
+
+</style>
+
+<!-- BACK BUTTON -->
+<a href="{{ url_for('home_page') }}" class="btn-back">← Back</a>
+<div class="dashboard-wrapper">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">M</div>
+      <div class="sidebar-logo-text">Student Panel</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">MAIN</div>
+
+      <a href="#" class="sidebar-item active">
+        <span class="sidebar-icon">🏠</span>
+        Overview
+      </a>
+
+
+       <a href="{{ url_for('student_attendance') }}" class="sidebar-item">
+         <span class="sidebar-icon">📋</span>
+         Attendance
+      </a>
+
+      <a href="{{ url_for('exam_proctoring') }}" class="sidebar-item">
+        <span class="sidebar-icon">✏️</span>
+        Exams
+      </a>
+      <div id="activeExamBanner" style="display:none; margin: 10px 20px; padding: 10px; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--primary); border-radius: 8px; position:relative;">
+          <button onclick="document.getElementById('activeExamBanner').style.display='none';"
+                  title="Dismiss"
+                  style="position:absolute; top:6px; right:8px; background:none; border:none; color:rgba(0,212,255,0.6); font-size:16px; cursor:pointer; line-height:1; padding:0;"
+                  onmouseover="this.style.color='#ef4444';" onmouseout="this.style.color='rgba(0,212,255,0.6)';">&#x2715;</button>
+          <div style="font-size: 10px; color: var(--primary); font-weight: bold; margin-bottom: 5px; padding-right:16px;">LIVE EXAM ACTIVE</div>
+          <div id="activeExamName" style="font-size: 12px; margin-bottom: 8px;"></div>
+          <a href="{{ url_for('exam_proctoring') }}" style="display: block; text-align: center; background: var(--primary); color: var(--navy-dark); padding: 5px; border-radius: 4px; font-size: 11px; font-weight: bold; text-decoration: none;">ENTER EXAM</a>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">AI TOOLS</div>
+
+      <a href="{{ url_for('advice_page') }}" class="sidebar-item">
+        🤖 AI Advice
+      </a>
+
+      <a href="{{ url_for('ai_tutor') }}" class="sidebar-item">
+        💬 AI Chat
+      </a>
+
+      <a href="{{ url_for('study_plan_page') }}" class="sidebar-item">
+        📚 Study Plan
+      </a>
+
+      <a href="{{ url_for('student_tasks') }}" class="sidebar-item">
+        🎯 tasks
+      </a>
+
+      <a href="{{ url_for('student_weakpoints') }}" class="sidebar-item">
+        ⚠️ Weak Points
+      </a>
+
+      <a href="{{ url_for('projects_dashboard') }}" class="sidebar-item">
+        📖 Resources
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">COMMUNICATION</div>
+
+      <a href="{{ url_for('doctor_chat') }}">
+         🔥 Doctor Chat
+      </a>
+
+     <a href="{{ url_for('student_manager_messages') }}" class="sidebar-item">
+        🧑‍💼 Manager Messages
+      </a>
+
+          <a href="{{ url_for('opinion_page') }}" class="sidebar-item">
+        📝 Opinion
+      </a>
+
+      <a href="javascript:void(0)" onclick="openStudentPollModal()" class="sidebar-item">
+        📊 Quick Polls
+        <span id="poll-badge" style="display:none; background:#ff4444; color:white; border-radius:50%; width:8px; height:8px; margin-left:5px;"></span>
+      </a>
+
+      <a href="{{ url_for('student_notifications') }}" class="sidebar-item">
+        🔔 Notifications
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">REPORTS</div>
+
+      <a href="{{ url_for('student_scores') }}" class="sidebar-item">
+        📈 Score Analysis
+      </a>
+
+      <a href="{{ url_for('student_calendar') }}" class="sidebar-item">
+        📅 Calendar
+      </a>
+
+      <a href="{{ url_for('student_profile') }}" class="sidebar-item">
+        👤 Profile
+      </a>
+    </div>
+
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- HEADER -->
+    <div class="header-section">
+      <div class="header-greeting">
+        <h1>Hello, {{ student.get('name', 'Student') }}</h1>
+        <p>Welcome back to your dashboard</p>
+      </div>
+
+      <div class="header-action">
+        <a href="{{ url_for('projects_dashboard') }}" class="btn-view-projects">
+          View Projects →
+        </a>
+      </div>
+    </div>
+    <div style="margin-top:20px; display:flex; gap:15px;">
+      <a href="{{ url_for('student_scores') }}" style="
+        display:inline-flex; align-items:center; gap:12px;
+        background:linear-gradient(135deg,rgba(0,212,255,0.12),rgba(0,255,136,0.08));
+        border:1px solid rgba(0,212,255,0.35);
+        color:white; text-decoration:none;
+        padding:14px 22px; border-radius:14px;
+        font-weight:700; font-size:14px;
+        transition:all 0.25s ease;
+        box-shadow:0 0 20px rgba(0,212,255,0.08);"
+        onmouseover="this.style.background='linear-gradient(135deg,rgba(0,212,255,0.25),rgba(0,255,136,0.18))'; this.style.borderColor='rgba(0,212,255,0.7)'; this.style.transform='translateY(-2px)';"
+        onmouseout="this.style.background='linear-gradient(135deg,rgba(0,212,255,0.12),rgba(0,255,136,0.08))'; this.style.borderColor='rgba(0,212,255,0.35)'; this.style.transform='translateY(0)';">
+        <span style="font-size:20px;">📊</span>
+        <span>
+          <span style="display:block; font-size:13px; font-weight:800; background:linear-gradient(90deg,#00d4ff,#00ff88); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">My Grades</span>
+          <span style="font-size:11px; color:#64748b; font-weight:400;">View score analysis</span>
+        </span>
+        <span style="margin-left:4px; color:#00d4ff; font-size:16px;">→</span>
+      </a>
+    </div>
+
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">GPA</div>
+          <div class="stat-value">{{ "%.2f"|format(calculated_gpa) }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Attendance</div>
+          <div class="stat-value">{{ student.get('attendance', 0) }}%</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Study Hours</div>
+          <div class="stat-value">{{ student.get('study_hours', 0) }}h</div>
+        </div>
+      </div>
+
+      <div class="today-plan">
+        <div class="today-plan-header">
+          <div class="today-plan-title">Today Plan</div>
+          <div class="today-plan-status">Organized</div>
+        </div>
+
+        <div class="plan-items">
+          <div class="plan-item">
+            <div class="plan-item-checkbox"></div>
+            <div class="plan-item-text">Review Data Structures</div>
+            <div class="plan-item-time">09:00 AM</div>
+          </div>
+
+          <div class="plan-item">
+            <div class="plan-item-checkbox"></div>
+            <div class="plan-item-text">Database section</div>
+            <div class="plan-item-time">12:00 PM</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- Student Poll Modal -->
+<div id="studentPollModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px);">
+    <div style="background:var(--navy-light); margin:10% auto; padding:30px; border:1px solid var(--border-color); border-radius:12px; width:400px; position:relative;">
+        <span onclick="closeStudentPollModal()" style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:24px;">&times;</span>
+        <h2 style="margin-top:0; color:var(--primary);">Quick Poll</h2>
+        <div id="pollList">
+            <p style="color:var(--text-secondary); font-size:14px;">Loading active polls...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function openStudentPollModal() {
+    document.getElementById('studentPollModal').style.display = 'block';
+    loadActivePolls();
+}
+
+function closeStudentPollModal() {
+    document.getElementById('studentPollModal').style.display = 'none';
+}
+
+function loadActivePolls() {
+    fetch('/student/active_polls')
+    .then(r => r.json())
+    .then(data => {
+        const list = document.getElementById('pollList');
+        if (data.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-secondary);">No active polls at the moment.</p>';
+            document.getElementById('poll-badge').style.display = 'none';
+            return;
+        }
+        
+        const unreadCount = data.filter(p => !p.answered).length;
+        document.getElementById('poll-badge').style.display = unreadCount > 0 ? 'inline-block' : 'none';
+        
+        list.innerHTML = '';
+        data.forEach(poll => {
+            const div = document.createElement('div');
+            div.style.background = 'rgba(255,255,255,0.05)';
+            div.style.padding = '15px';
+            div.style.borderRadius = '8px';
+            div.style.marginBottom = '10px';
+            div.style.border = '1px solid var(--border-color)';
+            
+            if (poll.answered) {
+                div.innerHTML = `
+                    <p style="margin-bottom:10px; font-weight:600;">${poll.question}</p>
+                    <div style="color:var(--accent); font-size:12px; font-weight:600;">✓ Answered</div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <p style="margin-bottom:15px; font-weight:600;">${poll.question}</p>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="submitPollAnswer(${poll.id}, 'yes')" style="flex:1; background:var(--accent); color:var(--navy-dark); border:none; padding:8px; border-radius:6px; font-weight:700; cursor:pointer;">YES</button>
+                        <button onclick="submitPollAnswer(${poll.id}, 'no')" style="flex:1; background:#ff4444; color:white; border:none; padding:8px; border-radius:6px; font-weight:700; cursor:pointer;">NO</button>
+                    </div>
+                `;
+            }
+            list.appendChild(div);
+        });
+    });
+}
+
+function submitPollAnswer(pollId, answer) {
+    const formData = new FormData();
+    formData.append('poll_id', pollId);
+    formData.append('answer', answer);
+    
+    fetch('/student/submit_poll', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            loadActivePolls();
+        } else {
+            alert(data.error || "Failed to submit answer");
+        }
+    });
+}
+
+// Check for polls every 10 seconds
+setInterval(() => {
+    fetch('/student/active_polls')
+    .then(r => r.json())
+    .then(data => {
+        const activeCount = data.filter(p => !p.answered).length;
+        document.getElementById('poll-badge').style.display = activeCount > 0 ? 'inline-block' : 'none';
+    });
+}, 10000);
+
+function checkActiveExam() {
+    fetch('/api/exam_status')
+    .then(r => r.json())
+    .then(data => {
+        const banner = document.getElementById('activeExamBanner');
+        const name = document.getElementById('activeExamName');
+        if (data.active) {
+            banner.style.display = 'block';
+            name.innerText = data.subject;
+        } else {
+            banner.style.display = 'none';
+        }
+    });
+}
+setInterval(checkActiveExam, 5000);
+checkActiveExam();
+</script>
+{% endblock %}

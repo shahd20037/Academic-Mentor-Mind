@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  color: white;
+}
+
+.card {
+  background: rgba(26, 35, 50, 0.7);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  padding: 25px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #00d4ff;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.good { background: #00ff88; color: black; }
+.medium { background: orange; }
+.bad { background: red; }
+</style>
+
+<div class="container">
+
+  <h2>🤖 AI Academic Advice</h2>
+
+  <div class="card">
+    <div class="title">GPA</div>
+    <p>{{ data.gpa }}</p>
+  </div>
+
+  <div class="card">
+    <div class="title">Risk Level</div>
+    <span class="badge 
+      {% if data.risk_level == 'Low' %}good{% endif %}
+      {% if data.risk_level == 'Medium' %}medium{% endif %}
+      {% if data.risk_level == 'High' %}bad{% endif %}
+    ">
+      {{ data.risk_level }}
+    </span>
+  </div>
+
+  <div class="card">
+    <div class="title">Advice</div>
+    <p style="white-space: pre-line;">
+      {{ data.advice }}
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

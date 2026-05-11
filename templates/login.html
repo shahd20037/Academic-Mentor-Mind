@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --bg-dark: #050a15;
+        --card-bg: rgba(13, 25, 48, 0.7);
+        --accent-gradient: linear-gradient(90deg, #4f46e5, #9333ea);
+        --text-main: #ffffff;
+        --text-dim: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+        background: radial-gradient(circle at top right, #1e293b 0%, #050a15 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--text-main);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding-top: 80px;
+    }
+
+    /* Override base.html container for centering */
+    .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex: 1;
+    }
+
+    .login-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 48px;
+        width: 100%;
+        max-width: 600px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    .card-accent-line {
+        position: absolute;
+        top: 48px;
+        left: 48px;
+        width: 40px;
+        height: 4px;
+        background: #4f46e5;
+        border-radius: 2px;
+    }
+
+    .role-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #4f46e5;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        display: block;
+        text-align: right;
+    }
+
+    .login-title {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        text-align: right;
+        letter-spacing: -1px;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        gap: 20px;
+    }
+
+    .header-content {
+        flex: 1;
+    }
+
+    .login-subtitle {
+        font-size: 16px;
+        color: var(--text-dim);
+        text-align: right;
+        margin-bottom: 48px;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .input-control {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .input-control:focus {
+        outline: none;
+        border-color: #4f46e5;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        margin-top: 12px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .signup-link-container {
+        margin-top: 32px;
+        text-align: center;
+        font-size: 14px;
+        color: var(--text-dim);
+    }
+
+    .signup-link {
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 4px;
+    }
+
+    .signup-link:hover {
+        text-decoration: underline;
+    }
+
+    .role-selector {
+        margin-bottom: 32px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .role-tab {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-dim);
+        transition: all 0.3s ease;
+    }
+
+    .role-tab.active {
+        background: rgba(79, 70, 229, 0.1);
+        border-color: #4f46e5;
+        color: #818cf8;
+    }
+
+    .hidden { display: none; }
+
+    .msg-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        text-align: center;
+    }
+</style>
+
+<div class="login-card">
+    <div class="card-accent-line"></div>
+    
+    <div class="role-selector">
+        <div class="role-tab active" onclick="setRole('student')">Student</div>
+        <div class="role-tab" onclick="setRole('doctor')">Doctor</div>
+        <div class="role-tab" onclick="setRole('manager')">Manager</div>
+    </div>
+
+    <div class="header-container">
+        <div class="header-content">
+            <span id="role-label" class="role-label">STUDENT ACCESS</span>
+            <h1 id="login-title" class="login-title">Welcome back</h1>
+        </div>
+        <a href="{{ url_for('home_page') }}" class="btn-back-global">← Back</a>
+    </div>
+    <p id="login-subtitle" class="login-subtitle">Use your university student code to enter your academic dashboard.</p>
+
+    {% if error %}
+        <div class="msg-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('login') }}">
+        <input type="hidden" name="role" id="role-input" value="student">
+
+        <!-- Student Fields -->
+        <div id="student-fields">
+            <div class="form-group">
+                <label class="form-label">Student Code</label>
+                <input type="text" name="student_code" class="input-control" placeholder="e.g. 20231245">
+            </div>
+        </div>
+
+        <!-- Doctor Fields -->
+        <div id="doctor-fields" class="hidden">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <select name="doctor_username_select" class="input-control">
+                    {% for name in doctor_names %}
+                        <option value="{{ name }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="doctor_password" class="input-control" placeholder="••••••••">
+            </div>
+        </div>
+
+        <!-- Manager Fields -->
+        <div id="manager-fields" class="hidden">
+            <div class="form-group">
+                <label class="form-label">Manager Password</label>
+                <input type="password" name="manager_password" class="input-control" placeholder="••••••••">
+            </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn-submit">Open Student Dashboard</button>
+    </form>
+
+    <div class="signup-link-container">
+        Don't have an account? 
+        <a id="signup-link" href="{{ url_for('signup_student') }}" class="signup-link">Sign up now</a>
+    </div>
+</div>
+
+<script>
+    function setRole(role) {
+        // Update tabs
+        document.querySelectorAll('.role-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if(tab.textContent.toLowerCase() === role) tab.classList.add('active');
+        });
+
+        // Update hidden input
+        document.getElementById('role-input').value = role;
+
+        // Update UI texts
+        const label = document.getElementById('role-label');
+        const title = document.getElementById('login-title');
+        const subtitle = document.getElementById('login-subtitle');
+        const btn = document.getElementById('submit-btn');
+        const signupLink = document.getElementById('signup-link');
+
+        // Hide all fields
+        document.getElementById('student-fields').classList.add('hidden');
+        document.getElementById('doctor-fields').classList.add('hidden');
+        document.getElementById('manager-fields').classList.add('hidden');
+
+        if(role === 'student') {
+            label.textContent = 'STUDENT ACCESS';
+            subtitle.textContent = 'Use your university student code to enter your academic dashboard.';
+            btn.textContent = 'Open Student Dashboard';
+            document.getElementById('student-fields').classList.remove('hidden');
+            signupLink.href = "{{ url_for('signup_student') }}";
+        } else if(role === 'doctor') {
+            label.textContent = 'DOCTOR PORTAL';
+            subtitle.textContent = 'Access your faculty dashboard to manage courses and students.';
+            btn.textContent = 'Enter Doctor Portal';
+            document.getElementById('doctor-fields').classList.remove('hidden');
+            signupLink.href = "{{ url_for('signup_doctor') }}";
+        } else if(role === 'manager') {
+            label.textContent = 'MANAGER VIEW';
+            subtitle.textContent = 'Administrative access for platform oversight and analytics.';
+            btn.textContent = 'Open Manager View';
+            document.getElementById('manager-fields').classList.remove('hidden');
+            signupLink.href = "{{ url_for('signup_manager') }}";
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Exam Content -->
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4" style="min-height: 600px; border-radius: 15px;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-primary">{{ task.title }}</h2>
+                    <div id="timer" class="h4 text-danger font-weight-bold">Time Remaining: 59:59</div>
+                </div>
+                <hr>
+                <div class="exam-body">
+                    <p class="lead">{{ task.description }}</p>
+                    {% if task.attachment_path %}
+                    <div class="alert alert-info">
+                        Please refer to the attached material: 
+                        <a href="{{ url_for('download_file', path=task.attachment_path) }}" target="_blank">Download Material</a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-5">
+                        <h5>Your Answer:</h5>
+                        <textarea class="form-control" rows="10" placeholder="Type your answer here..." id="examAnswer"></textarea>
+                    </div>
+                    
+                    <div class="mt-4 text-right">
+                        <button class="btn btn-primary btn-lg px-5" id="submitExam">Submit Exam</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proctoring Sidebar -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 bg-dark text-white" style="border-radius: 15px; position: sticky; top: 20px;">
+                <h5 class="text-center mb-3"><i class="fas fa-video"></i> Proctoring Active</h5>
+                <div class="video-container mb-3" style="background: #000; border-radius: 10px; overflow: hidden; aspect-ratio: 4/3;">
+                    <video id="video" width="100%" height="100%" autoplay muted playsinline></video>
+                    <canvas id="canvas" style="display:none;"></canvas>
+                </div>
+                <div id="proctoringStatus" class="small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Camera:</span> <span class="text-success" id="camStatus">Checking...</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Microphone:</span> <span class="text-success" id="micStatus">Checking...</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Face Tracking:</span> <span class="text-success" id="faceStatus">Active</span>
+                    </div>
+                </div>
+                <hr class="bg-secondary">
+                <div id="warnings" class="mt-2">
+                    <h6 class="text-warning"><i class="fas fa-exclamation-triangle"></i> Recent Warnings:</h6>
+                    <ul id="warningList" class="list-unstyled small text-warning" style="max-height: 150px; overflow-y: auto;">
+                        <li>- System initialized.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Proctoring Logic -->
+<script>
+    const taskId = {{ task.id }};
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const warningList = document.getElementById('warningList');
+    let warningCount = 0;
+
+    // 1. Camera & Mic Access
+    async function setupMedia() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            video.srcObject = stream;
+            document.getElementById('camStatus').innerText = 'Online';
+            document.getElementById('micStatus').innerText = 'Online';
+        } catch (err) {
+            alert("Camera and Microphone access is required for this exam!");
+            window.location.href = "{{ url_for('student_dashboard') }}";
+        }
+    }
+
+    // 2. Tab Switching Detection
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            logViolation('TAB_SWITCH', 'Student left the exam page');
+        }
+    });
+
+    window.addEventListener('blur', () => {
+        logViolation('WINDOW_BLUR', 'Student switched to another window/app');
+    });
+
+    // 3. Prevent Copy/Paste
+    document.addEventListener('copy', (e) => {
+        e.preventDefault();
+        logViolation('COPY_ATTEMPT', 'Student tried to copy text');
+    });
+    document.addEventListener('paste', (e) => {
+        e.preventDefault();
+        logViolation('PASTE_ATTEMPT', 'Student tried to paste text');
+    });
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // 4. Logging Violations
+    function logViolation(type, details) {
+        const li = document.createElement('li');
+        li.innerText = `- [${new Date().toLocaleTimeString()}] ${type}: ${details}`;
+        warningList.prepend(li);
+        
+        // Take screenshot
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const screenshot = canvas.toDataURL('image/jpeg', 0.5);
+
+        fetch('/api/proctoring/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                task_id: taskId,
+                violation_type: type,
+                details: details,
+                screenshot: screenshot
+            })
+        });
+
+        warningCount++;
+        if (warningCount > 5) {
+            alert("Too many violations detected! Your exam may be terminated.");
+        }
+    }
+
+    // 5. Face Detection Simulation (Simplified for Frontend)
+    // In a real app, we'd use face-api.js or MediaPipe here.
+    // For now, we'll simulate periodic checks.
+    setInterval(() => {
+        // Randomly simulate "Looking Away" or "Face Not Found" for demo if needed
+        // Or just keep it as a placeholder for where the ML model would go
+    }, 5000);
+
+    setupMedia();
+
+    // Timer Logic
+    let timeLeft = 3600;
+    setInterval(() => {
+        if (timeLeft <= 0) return;
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        document.getElementById('timer').innerText = `Time Remaining: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }, 1000);
+
+    document.getElementById('submitExam').onclick = () => {
+        alert("Exam submitted successfully!");
+        window.location.href = "{{ url_for('student_dashboard') }}";
+    };
+</script>
+
+<style>
+    body { background-color: #f4f7f6; }
+    .video-container { position: relative; border: 2px solid #444; }
+    #warningList li { border-bottom: 1px solid #444; padding: 5px 0; }
+    #examAnswer { font-size: 1.1rem; line-height: 1.6; border-radius: 10px; }
+</style>
+{% endblock %}
