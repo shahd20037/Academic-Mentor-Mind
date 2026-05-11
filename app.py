@@ -529,14 +529,6 @@ def upload_project():
     return redirect(url_for("projects_dashboard"))
 
 
-@app.route("/")
-def home():
-    return render_template("Home_page.html")
-
-@app.route("/")
-def home():
-    return render_template("Home_page.html")
-
 @app.route("/projects/interact/<int:project_id>/<string:itype>", methods=["POST"])
 def interact_project(project_id, itype):
     if not session.get("student_code"):
